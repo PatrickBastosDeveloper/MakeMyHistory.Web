@@ -1,5 +1,5 @@
 import { httpClient } from './httpClient';
-import type { Memory } from '../types/memory';
+import type { MemoryUI } from '../types/memory';
 
 export type CreateMemoryRequest = {
   title?: string;
@@ -10,11 +10,11 @@ export type CreateMemoryRequest = {
 };
 
 export type CreateMemoryResponse = {
-  memory: Memory;
+  memory: MemoryUI;
 };
 
 export type MemoriesListResponse = {
-  memories: Memory[];
+  memories: MemoryUI[];
 };
 
 export function getMemories(limit: number) {
