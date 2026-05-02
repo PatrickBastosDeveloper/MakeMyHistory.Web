@@ -153,7 +153,10 @@ export function HomePage() {
                     className="pill"
                     type="button"
                     disabled={isRefreshing}
-                    onClick={() => void memoriesQuery.refetch()}
+                    onClick={() => {
+                      track('retry_clicked');
+                      void memoriesQuery.refetch();
+                    }}
                   >
                     Tentar novamente
                   </button>
@@ -226,7 +229,10 @@ export function HomePage() {
                     className="pill"
                     type="button"
                     disabled={isRefreshing}
-                    onClick={handleRefresh}
+                    onClick={() => {
+                      track('retry_clicked');
+                      handleRefresh();
+                    }}
                   >
                     Tentar novamente
                   </button>
