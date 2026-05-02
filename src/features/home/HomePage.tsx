@@ -126,9 +126,35 @@ export function HomePage() {
             ) : storyQuery.data?.story ? (
               <article className="story-card">
                 <p>{storyQuery.data.story.content}</p>
+                <div className="hero-actions">
+                  <button
+                    className="pill"
+                    type="button"
+                    onClick={() => {
+                      track('story_generate_clicked');
+                      void storyQuery.refetch();
+                    }}
+                  >
+                    Atualizar história
+                  </button>
+                </div>
               </article>
             ) : (
-              <p className="timeline-state">Ainda não existe história gerada para você.</p>
+              <div className="story-empty">
+                <p className="timeline-state">Ainda não existe história gerada para você.</p>
+                <div className="hero-actions">
+                  <button
+                    className="pill"
+                    type="button"
+                    onClick={() => {
+                      track('story_generate_clicked');
+                      void storyQuery.refetch();
+                    }}
+                  >
+                    Gerar minha história
+                  </button>
+                </div>
+              </div>
             )}
           </section>
         </div>
