@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { formatMemoryDate } from '../../lib/date/formatMemoryDate';
 import { sortMemories } from '../../lib/date/sortMemories';
 import { track } from '../../lib/track/track';
@@ -16,6 +16,10 @@ export function HomePage() {
   const memoriesQuery = useMemoriesTimeline(DEMO_USER_ID);
   const storyQuery = useMyStory(DEMO_USER_ID);
   const [content, setContent] = useState('');
+
+  useEffect(() => {
+    track('app_opened');
+  }, []);
 
   const memories = useMemo(() => {
     return sortMemories(memoriesQuery.data?.memories ?? []).slice(0, MAX_MEMORIES_VISIBLE);
@@ -77,6 +81,14 @@ export function HomePage() {
                       return;
                     }
 
+                    if (navigator.onLine === false) {
+                      showToast({
+                        message: 'Sem conexão. Tente novamente quando estiver online.',
+                        variant: 'error',
+                      });
+                      return;
+                    }
+
                     createMemoryMutation.mutate(
                       {
                         userId: DEMO_USER_ID,
@@ -133,7 +145,20 @@ export function HomePage() {
             {memoriesQuery.isLoading ? (
               <p className="timeline-state">Carregando memórias...</p>
             ) : memoriesQuery.isError ? (
-              <p className="timeline-state">Não foi possível carregar a timeline.</p>
+              <div className="story-empty">
+                <p className="timeline-state">Não foi possível carregar a timeline.</p>
+                <p className="timeline-hint">Verifique sua conexão e tente novamente.</p>
+                <div className="hero-actions">
+                  <button
+                    className="pill"
+                    type="button"
+                    disabled={isRefreshing}
+                    onClick={() => void memoriesQuery.refetch()}
+                  >
+                    Tentar novamente
+                  </button>
+                </div>
+              </div>
             ) : memories.length === 0 ? (
               <div className="story-empty">
                 <p className="timeline-state">Sua timeline está vazia. Escreva a primeira memória.</p>
@@ -185,7 +210,20 @@ export function HomePage() {
             {storyQuery.isLoading ? (
               <p className="timeline-state">Estamos escrevendo sua história...</p>
             ) : storyQuery.isError ? (
-              <p className="timeline-state">Não foi possível carregar sua história.</p>
+              <div className="story-empty">
+                <p className="timeline-state">Não foi possível carregar sua história.</p>
+                <p className="timeline-hint">Tente recarregar quando a conexão estiver estável.</p>
+                <div className="hero-actions">
+                  <button
+                    className="pill"
+                    type="button"
+                    disabled={isRefreshing}
+                    onClick={handleRefresh}
+                  >
+                    Tentar novamente
+                  </button>
+                </div>
+              </div>
             ) : storyQuery.data?.story ? (
               <article className="story-card">
                 <p>{storyQuery.data.story.content}</p>
@@ -232,7 +270,6 @@ export function HomePage() {
             className="pill"
             type="button"
             onClick={() => {
-              track('app_opened');
               showToast({
                 message: `Hoje é ${formatMemoryDate(new Date())}.`,
                 variant: 'info',
