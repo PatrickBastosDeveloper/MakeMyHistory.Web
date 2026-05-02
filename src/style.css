@@ -229,6 +229,19 @@ h1 {
   margin: 0;
 }
 
+.story-empty {
+  display: grid;
+  gap: 14px;
+  padding-top: 4px;
+}
+
+.story-empty .timeline-state {
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px dashed rgba(125, 211, 252, 0.18);
+  background: rgba(2, 6, 23, 0.28);
+}
+
 @media (max-width: 900px) {
   .content-grid {
     grid-template-columns: 1fr;
