@@ -14,6 +14,12 @@ if (!container) {
   throw new Error('Elemento #app não encontrado.');
 }
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    void navigator.serviceWorker.register('/sw.js');
+  });
+}
+
 createRoot(container).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>

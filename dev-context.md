@@ -1,6 +1,6 @@
 # Dev Context — MakeMyHistory.Web
 
-Última atualização: 2026-05-02 16:31 BRT
+Última atualização: 2026-05-02 16:41 BRT
 
 ## Objetivo deste documento
 Servir como resumo vivo do que já foi implementado no frontend e do ponto exato em que o desenvolvimento está, para que qualquer agente consiga retomar a thread sem perder contexto.
@@ -15,9 +15,9 @@ Servir como resumo vivo do que já foi implementado no frontend e do ponto exato
 - **4/7 — Fase 4:** concluída e validada
 - **5/7 — Fase 5:** concluída e validada
 - **6/7 — Fase 6:** concluída e validada
-- **7/7 — Fase 7:** não iniciada
+- **7/7 — Fase 7:** em andamento
 
-> Status atual: a Fase 6 foi refinada com composição visual dos componentes compartilhados, validada em build e no navegador, integrada com o `userId` real da auth mínima e protegida contra renderização prematura enquanto a auth prepara o estado inicial. A Home agora também possui título opcional de memória com contador visual e tracking de abertura sem duplicação em dev. A Fase 6 está concluída e validada; o próximo trabalho deve avançar para a Fase 7.
+> Status atual: a Fase 6 foi refinada com composição visual dos componentes compartilhados, validada em build e no navegador, integrada com o `userId` real da auth mínima e protegida contra renderização prematura enquanto a auth prepara o estado inicial. A Home agora também possui título opcional de memória com contador visual e tracking de abertura sem duplicação em dev. A Fase 6 está concluída e validada; a Fase 7 avançou com base de PWA, manifesto, ícone, service worker mínimo e CTA de instalação.
 
 ---
 
@@ -118,7 +118,14 @@ Servir como resumo vivo do que já foi implementado no frontend e do ponto exato
 - `npm run build` passou após a proteção de renderização inicial com `isReady`
 - `npm run build` passou após a adição do título opcional na Home
 - `npm run build` passou após a adição do contador visual do título
+- `npm run build` passou após a base inicial de PWA
 - bundle CSS atual consolidado com os novos componentes
+- `public/manifest.webmanifest` adicionado
+- `public/pwa-icon.svg` adicionado
+- `public/sw.js` adicionado
+- `index.html` passou a referenciar o manifesto e o tema
+- `src/main.tsx` passou a registrar o service worker
+- Home exibe CTA de instalação quando o prompt está disponível
 
 ---
 
@@ -195,7 +202,6 @@ Servir como resumo vivo do que já foi implementado no frontend e do ponto exato
 ---
 
 ## Próximo foco imediato
-- iniciar a Fase 7
-- revisar o que falta para PWA, manifesto e ícones
-- preparar a camada de instalação do app
+- seguir a implementação da Fase 7
+- revisar o comportamento de instalação do PWA
 - manter a base atual estável enquanto avançamos

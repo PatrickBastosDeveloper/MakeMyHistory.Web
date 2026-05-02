@@ -1,0 +1,19 @@
+{
+  "name": "MakeMyHistory",
+  "short_name": "MakeMyHistory",
+  "description": "Registre memórias, acompanhe sua timeline e construa sua história pessoal.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#08111f",
+  "theme_color": "#0f172a",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "/pwa-icon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

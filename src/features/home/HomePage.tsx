@@ -16,6 +16,17 @@ import { useMemoriesTimeline } from '../../hooks/useMemoriesTimeline';
 import { useMyStory } from '../../hooks/useMyStory';
 import { useAuth } from '../auth/AuthProvider';
 
+declare global {
+  interface WindowEventMap {
+    beforeinstallprompt: BeforeInstallPromptEvent;
+  }
+}
+
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
+};
+
 const MAX_MEMORIES_VISIBLE = 50;
 const MAX_TITLE_LENGTH = 120;
 
@@ -28,6 +39,7 @@ export function HomePage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [isGeneratingStory, setIsGeneratingStory] = useState(false);
+  const [installPromptEvent, setInstallPromptEvent] = useState<BeforeInstallPromptEvent | null>(null);
   const hasTrackedAppOpen = useRef(false);
 
   useEffect(() => {
@@ -37,6 +49,19 @@ export function HomePage() {
 
     track('app_opened');
     hasTrackedAppOpen.current = true;
+  }, []);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (event: BeforeInstallPromptEvent) => {
+      event.preventDefault();
+      setInstallPromptEvent(event);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
   }, []);
 
   const memories = useMemo(() => {
@@ -57,6 +82,28 @@ export function HomePage() {
     void storyQuery.refetch().finally(() => {
       setIsGeneratingStory(false);
     });
+  };
+
+  const handleInstallApp = async () => {
+    if (!installPromptEvent) {
+      showToast({
+        message: 'A instalação ainda não está disponível neste navegador.',
+        variant: 'info',
+      });
+      return;
+    }
+
+    await installPromptEvent.prompt();
+    const choice = await installPromptEvent.userChoice;
+
+    if (choice.outcome === 'accepted') {
+      showToast({
+        message: 'App instalado com sucesso.',
+        variant: 'success',
+      });
+    }
+
+    setInstallPromptEvent(null);
   };
 
   const isRefreshing = memoriesQuery.isFetching || storyQuery.isFetching;
@@ -81,7 +128,19 @@ export function HomePage() {
           <Header
             title="Bem-vindo ao MakeMyHistory"
             subtitle="Registre memórias, acompanhe sua timeline e acompanhe sua história pessoal."
-            action={<Badge variant="default">MVP</Badge>}
+            action={
+              <div className="section-actions">
+                <Badge variant="default">MVP</Badge>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={!installPromptEvent}
+                  onClick={handleInstallApp}
+                >
+                  {installPromptEvent ? 'Instalar app' : 'Instalação indisponível'}
+                </Button>
+              </div>
+            }
           />
 
           <div className="content-grid">
@@ -102,7 +161,9 @@ export function HomePage() {
                 </label>
 
                 <div className="input-footer">
-                  <span className="timeline-count">{title.length} / {MAX_TITLE_LENGTH}</span>
+                  <span className="timeline-count">
+                    {title.length} / {MAX_TITLE_LENGTH}
+                  </span>
                 </div>
 
                 <TextArea
@@ -282,20 +343,6 @@ export function HomePage() {
                 />
               )}
             </section>
-          </div>
-
-          <div className="hero-actions">
-            <Button
-              type="button"
-              onClick={() => {
-                showToast({
-                  message: `Hoje é ${formatMemoryDate(new Date())}.`,
-                  variant: 'info',
-                });
-              }}
-            >
-              Abrir saudação
-            </Button>
           </div>
         </Card>
       </Container>
