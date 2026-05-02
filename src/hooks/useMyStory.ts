@@ -5,7 +5,7 @@ import { getMyStory } from '../services/storyService';
 export function useMyStory(userId: string) {
   return useQuery({
     queryKey: queryKeys.story.me(userId),
-    queryFn: () => getMyStory(),
+    queryFn: () => getMyStory(userId),
     enabled: Boolean(userId),
   });
 }

@@ -4,6 +4,7 @@ const baseUrl = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim(
 
 export type RequestOptions = RequestInit & {
   authToken?: string;
+  userId?: string;
 };
 
 export async function httpClient<T>(path: string, options: RequestOptions = {}): Promise<T> {
@@ -15,6 +16,10 @@ export async function httpClient<T>(path: string, options: RequestOptions = {}):
 
   if (options.authToken) {
     headers.set('Authorization', `Bearer ${options.authToken}`);
+  }
+
+  if (options.userId) {
+    headers.set('X-User-Id', options.userId);
   }
 
   const response = await fetch(`${baseUrl}${path}`, {

@@ -8,7 +8,7 @@ export function useMemoriesTimeline(userId: string) {
   return useQuery({
     queryKey: queryKeys.memories.timeline(userId),
     queryFn: async () => {
-      const response = await getMemories(DEFAULT_LIMIT);
+      const response = await getMemories(DEFAULT_LIMIT, userId);
 
       return response;
     },

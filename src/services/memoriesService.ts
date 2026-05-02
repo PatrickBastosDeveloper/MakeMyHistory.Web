@@ -17,13 +17,16 @@ export type MemoriesListResponse = {
   memories: MemoryUI[];
 };
 
-export function getMemories(limit: number) {
-  return httpClient<MemoriesListResponse>(`/api/memories?limit=${limit}`);
+export function getMemories(limit: number, userId?: string) {
+  return httpClient<MemoriesListResponse>(`/api/memories?limit=${limit}`, {
+    userId,
+  });
 }
 
-export function createMemory(payload: CreateMemoryRequest) {
+export function createMemory(payload: CreateMemoryRequest, userId?: string) {
   return httpClient<CreateMemoryResponse>('/api/memories', {
     method: 'POST',
     body: JSON.stringify(payload),
+    userId,
   });
 }
