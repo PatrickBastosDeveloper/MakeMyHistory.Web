@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Badge } from '../../components/Badge';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
@@ -14,20 +14,29 @@ import { useToast } from '../../lib/toast/useToast';
 import { useCreateMemory } from '../../hooks/useCreateMemory';
 import { useMemoriesTimeline } from '../../hooks/useMemoriesTimeline';
 import { useMyStory } from '../../hooks/useMyStory';
+import { useAuth } from '../auth/AuthProvider';
 
-const DEMO_USER_ID = 'demo-user-id';
 const MAX_MEMORIES_VISIBLE = 50;
+const MAX_TITLE_LENGTH = 120;
 
 export function HomePage() {
   const { showToast } = useToast();
+  const { userId, isReady } = useAuth();
   const createMemoryMutation = useCreateMemory();
-  const memoriesQuery = useMemoriesTimeline(DEMO_USER_ID);
-  const storyQuery = useMyStory(DEMO_USER_ID);
+  const memoriesQuery = useMemoriesTimeline(userId);
+  const storyQuery = useMyStory(userId);
+  const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [isGeneratingStory, setIsGeneratingStory] = useState(false);
+  const hasTrackedAppOpen = useRef(false);
 
   useEffect(() => {
+    if (hasTrackedAppOpen.current) {
+      return;
+    }
+
     track('app_opened');
+    hasTrackedAppOpen.current = true;
   }, []);
 
   const memories = useMemo(() => {
@@ -35,7 +44,6 @@ export function HomePage() {
   }, [memoriesQuery.data?.memories]);
 
   const handleRefresh = () => {
-    track('story_generate_clicked');
     showToast({
       message: 'Atualizando timeline e história...',
       variant: 'info',
@@ -54,6 +62,18 @@ export function HomePage() {
   const isRefreshing = memoriesQuery.isFetching || storyQuery.isFetching;
   const canSubmit = Boolean(content.trim()) && !createMemoryMutation.isPending;
 
+  if (!isReady) {
+    return (
+      <main className="page-shell">
+        <Container>
+          <Card className="hero-card">
+            <LoadingState label="Preparando sua história..." />
+          </Card>
+        </Container>
+      </main>
+    );
+  }
+
   return (
     <main className="page-shell">
       <Container>
@@ -68,6 +88,23 @@ export function HomePage() {
             <section className="panel-card">
               <Header title="Nova memória" subtitle="Fluxo principal" />
               <div className="memory-form">
+                <label className="input-field" htmlFor="memory-title">
+                  <span className="input-field__label">Título opcional</span>
+                  <input
+                    id="memory-title"
+                    className="input"
+                    type="text"
+                    value={title}
+                    placeholder="Ex.: Viagem para o litoral"
+                    maxLength={MAX_TITLE_LENGTH}
+                    onChange={(event) => setTitle(event.target.value)}
+                  />
+                </label>
+
+                <div className="input-footer">
+                  <span className="timeline-count">{title.length} / {MAX_TITLE_LENGTH}</span>
+                </div>
+
                 <TextArea
                   id="memory-content"
                   label="Conteúdo"
@@ -102,7 +139,8 @@ export function HomePage() {
 
                       createMemoryMutation.mutate(
                         {
-                          userId: DEMO_USER_ID,
+                          userId,
+                          title: title.trim() || undefined,
                           content: content.trim(),
                           clientRequestId: crypto.randomUUID(),
                         },
@@ -113,6 +151,7 @@ export function HomePage() {
                               message: `Memória guardada em ${formatMemoryDate(new Date())}.`,
                               variant: 'success',
                             });
+                            setTitle('');
                             setContent('');
                           },
                           onError: () => {
@@ -184,9 +223,9 @@ export function HomePage() {
                             onClick={() => {
                               track('retry_clicked');
                               createMemoryMutation.mutate({
-                                userId: DEMO_USER_ID,
-                                content: memory.content,
+                                userId,
                                 title: memory.title,
+                                content: memory.content,
                                 eventDate: memory.eventDate,
                                 eventYear: memory.eventYear,
                                 clientRequestId: memory.clientRequestId ?? crypto.randomUUID(),

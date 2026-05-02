@@ -1,6 +1,6 @@
 # Dev Context — MakeMyHistory.Web
 
-Última atualização: 2026-05-02 16:15 BRT
+Última atualização: 2026-05-02 16:31 BRT
 
 ## Objetivo deste documento
 Servir como resumo vivo do que já foi implementado no frontend e do ponto exato em que o desenvolvimento está, para que qualquer agente consiga retomar a thread sem perder contexto.
@@ -14,10 +14,10 @@ Servir como resumo vivo do que já foi implementado no frontend e do ponto exato
 - **3/7 — Fase 3:** concluída e consolidada
 - **4/7 — Fase 4:** concluída e validada
 - **5/7 — Fase 5:** concluída e validada
-- **6/7 — Fase 6:** em andamento
+- **6/7 — Fase 6:** concluída e validada
 - **7/7 — Fase 7:** não iniciada
 
-> Status atual: a Fase 6 foi refinada com composição visual dos componentes compartilhados e validada em build e no navegador. O próximo trabalho deve continuar no aprimoramento da Fase 6 até sua consolidação final, antes da Fase 7.
+> Status atual: a Fase 6 foi refinada com composição visual dos componentes compartilhados, validada em build e no navegador, integrada com o `userId` real da auth mínima e protegida contra renderização prematura enquanto a auth prepara o estado inicial. A Home agora também possui título opcional de memória com contador visual e tracking de abertura sem duplicação em dev. A Fase 6 está concluída e validada; o próximo trabalho deve avançar para a Fase 7.
 
 ---
 
@@ -108,8 +108,16 @@ Servir como resumo vivo do que já foi implementado no frontend e do ponto exato
   - `.header`
   - `.badge`
 - Home já começou a usar os componentes base
+- Home agora consome o `userId` real da auth mínima
+- Home espera `isReady` da auth antes de renderizar o conteúdo principal
+- Home possui título opcional de memória no fluxo de criação
+- Home possui contador visual para o título opcional
 - `npm run build` passou após a integração inicial dos componentes
 - `npm run build` passou novamente após a adição do `TextArea` e do refinamento do CSS
+- `npm run build` passou após a integração com `userId` real
+- `npm run build` passou após a proteção de renderização inicial com `isReady`
+- `npm run build` passou após a adição do título opcional na Home
+- `npm run build` passou após a adição do contador visual do título
 - bundle CSS atual consolidado com os novos componentes
 
 ---
@@ -175,15 +183,19 @@ Servir como resumo vivo do que já foi implementado no frontend e do ponto exato
 - a Fase 3 foi validada
 - a Fase 4 foi validada
 - a Fase 5 foi validada
-- a Fase 6 já iniciou com componentes compartilhados e compilação bem-sucedida após a integração inicial
-- a Fase 6 segue em andamento com os componentes base e estilos compartilhados consolidados
+- a Fase 6 foi validada e consolidada
 - a Home já está consumindo melhor a base visual compartilhada
+- a Home já está integrada ao `userId` real da auth mínima
+- a Home só exibe conteúdo principal após a auth mínima ficar pronta
+- a Home agora oferece criação de memória com título opcional
+- a Home agora mostra contador visual do título opcional
 - build validado com sucesso após o refinamento recente
 - validação no navegador feita com sucesso
 
 ---
 
 ## Próximo foco imediato
-- seguir refinando a Fase 6 com composição visual dos componentes compartilhados
-- revisar a Home para aproveitar melhor a nova base visual
-- concluir a Fase 6 antes de avançar para a Fase 7
+- iniciar a Fase 7
+- revisar o que falta para PWA, manifesto e ícones
+- preparar a camada de instalação do app
+- manter a base atual estável enquanto avançamos
