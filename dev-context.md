@@ -1,6 +1,6 @@
 # Dev Context — MakeMyHistory.Web
 
-Última atualização: 2026-05-02 16:41 BRT
+Última atualização: 2026-05-02 16:43 BRT
 
 ## Objetivo deste documento
 Servir como resumo vivo do que já foi implementado no frontend e do ponto exato em que o desenvolvimento está, para que qualquer agente consiga retomar a thread sem perder contexto.
@@ -15,9 +15,9 @@ Servir como resumo vivo do que já foi implementado no frontend e do ponto exato
 - **4/7 — Fase 4:** concluída e validada
 - **5/7 — Fase 5:** concluída e validada
 - **6/7 — Fase 6:** concluída e validada
-- **7/7 — Fase 7:** em andamento
+- **7/7 — Fase 7:** concluída e validada
 
-> Status atual: a Fase 6 foi refinada com composição visual dos componentes compartilhados, validada em build e no navegador, integrada com o `userId` real da auth mínima e protegida contra renderização prematura enquanto a auth prepara o estado inicial. A Home agora também possui título opcional de memória com contador visual e tracking de abertura sem duplicação em dev. A Fase 6 está concluída e validada; a Fase 7 avançou com base de PWA, manifesto, ícone, service worker mínimo e CTA de instalação.
+> Status atual: a Fase 6 foi refinada com composição visual dos componentes compartilhados, validada em build e no navegador, integrada com o `userId` real da auth mínima e protegida contra renderização prematura enquanto a auth prepara o estado inicial. A Home agora também possui título opcional de memória com contador visual e tracking de abertura sem duplicação em dev. A Fase 6 está concluída e validada; a Fase 7 foi concluída com base de PWA, manifesto, ícone, service worker mínimo, registro no boot da aplicação e CTA de instalação.
 
 ---
 
@@ -202,6 +202,5 @@ Servir como resumo vivo do que já foi implementado no frontend e do ponto exato
 ---
 
 ## Próximo foco imediato
-- seguir a implementação da Fase 7
-- revisar o comportamento de instalação do PWA
-- manter a base atual estável enquanto avançamos
+- iniciar uma próxima etapa quando houver nova demanda
+- manter a base atual estável
