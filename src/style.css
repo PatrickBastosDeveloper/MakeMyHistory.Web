@@ -110,6 +110,13 @@ h1 {
   margin-bottom: 16px;
 }
 
+.section-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .memory-form {
   display: grid;
   gap: 12px;
@@ -124,6 +131,25 @@ h1 {
 .timeline-count {
   font-size: 0.9rem;
   color: #94a3b8;
+}
+
+.text-button {
+  border: 0;
+  background: transparent;
+  color: #7dd3fc;
+  padding: 0;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.15s ease;
+}
+
+.text-button:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.text-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .memory-input {
@@ -203,6 +229,15 @@ h1 {
   padding: 16px;
 }
 
+.timeline-item--pending {
+  opacity: 0.72;
+}
+
+.timeline-item--error {
+  border-color: rgba(248, 113, 113, 0.38);
+  background: rgba(127, 29, 29, 0.16);
+}
+
 .timeline-item-header {
   display: flex;
   justify-content: space-between;
@@ -215,6 +250,21 @@ h1 {
 .timeline-item p {
   margin: 0;
   color: #cbd5e1;
+}
+
+.timeline-status {
+  display: inline-flex;
+  margin-top: 10px;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.timeline-status--pending {
+  color: #fbbf24;
+}
+
+.timeline-status--error {
+  color: #fca5a5;
 }
 
 .story-card {

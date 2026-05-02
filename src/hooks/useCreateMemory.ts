@@ -23,6 +23,18 @@ function createOptimisticMemory(payload: CreateMemoryRequest) {
   } satisfies MemoryUI;
 }
 
+function isDuplicateMemory(existing: MemoryUI, candidate: CreateMemoryRequest) {
+  if (existing.clientRequestId === candidate.clientRequestId) {
+    return true;
+  }
+
+  const sameContent = existing.content.trim() === candidate.content.trim();
+  const sameTitle = (existing.title ?? '').trim() === (candidate.title ?? '').trim();
+  const timeDiff = Math.abs(new Date(existing.createdAt).getTime() - Date.now());
+
+  return sameContent && sameTitle && timeDiff < 3000;
+}
+
 export function useCreateMemory() {
   const queryClient = useQueryClient();
 
@@ -40,6 +52,15 @@ export function useCreateMemory() {
 
       queryClient.setQueryData<{ memories: MemoryUI[] }>(queryKey, (current) => {
         const memories = current?.memories ?? [];
+        const hasPendingDuplicate = memories.some(
+          (memory) => memory.status === 'pending' && isDuplicateMemory(memory, payload),
+        );
+
+        if (hasPendingDuplicate) {
+          return {
+            memories,
+          };
+        }
 
         return {
           memories: [optimisticMemory, ...memories],
