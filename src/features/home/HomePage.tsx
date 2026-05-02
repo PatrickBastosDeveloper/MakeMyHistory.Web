@@ -190,9 +190,29 @@ export function HomePage() {
                       <span className="timeline-status timeline-status--pending">Guardando...</span>
                     ) : null}
                     {memory.status === 'error' ? (
-                      <span className="timeline-status timeline-status--error">
-                        Não foi possível guardar
-                      </span>
+                      <div className="timeline-error-actions">
+                        <span className="timeline-status timeline-status--error">
+                          Não foi possível guardar
+                        </span>
+                        <button
+                          className="text-button"
+                          type="button"
+                          disabled={createMemoryMutation.isPending}
+                          onClick={() => {
+                            track('retry_clicked');
+                            createMemoryMutation.mutate({
+                              userId: DEMO_USER_ID,
+                              content: memory.content,
+                              title: memory.title,
+                              eventDate: memory.eventDate,
+                              eventYear: memory.eventYear,
+                              clientRequestId: memory.clientRequestId ?? crypto.randomUUID(),
+                            });
+                          }}
+                        >
+                          Tentar novamente
+                        </button>
+                      </div>
                     ) : null}
                   </li>
                 ))}
@@ -231,7 +251,7 @@ export function HomePage() {
                     disabled={isRefreshing}
                     onClick={() => {
                       track('retry_clicked');
-                      handleRefresh();
+                      void storyQuery.refetch();
                     }}
                   >
                     Tentar novamente
