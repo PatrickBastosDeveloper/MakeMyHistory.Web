@@ -16,6 +16,7 @@ export function HomePage() {
   const memoriesQuery = useMemoriesTimeline(DEMO_USER_ID);
   const storyQuery = useMyStory(DEMO_USER_ID);
   const [content, setContent] = useState('');
+  const [isGeneratingStory, setIsGeneratingStory] = useState(false);
 
   useEffect(() => {
     track('app_opened');
@@ -32,6 +33,14 @@ export function HomePage() {
       variant: 'info',
     });
     void Promise.all([memoriesQuery.refetch(), storyQuery.refetch()]);
+  };
+
+  const handleGenerateStory = () => {
+    track('story_generate_clicked');
+    setIsGeneratingStory(true);
+    void storyQuery.refetch().finally(() => {
+      setIsGeneratingStory(false);
+    });
   };
 
   const isRefreshing = memoriesQuery.isFetching || storyQuery.isFetching;
@@ -265,13 +274,12 @@ export function HomePage() {
                   <button
                     className="pill"
                     type="button"
-                    disabled={storyQuery.isFetching}
-                    onClick={() => {
-                      track('story_generate_clicked');
-                      void storyQuery.refetch();
-                    }}
+                    disabled={storyQuery.isFetching || isGeneratingStory}
+                    onClick={handleGenerateStory}
                   >
-                    Atualizar história
+                    {storyQuery.isFetching || isGeneratingStory
+                      ? 'Escrevendo sua história...'
+                      : 'Atualizar história'}
                   </button>
                 </div>
               </article>
@@ -285,13 +293,12 @@ export function HomePage() {
                   <button
                     className="pill"
                     type="button"
-                    disabled={storyQuery.isFetching}
-                    onClick={() => {
-                      track('story_generate_clicked');
-                      void storyQuery.refetch();
-                    }}
+                    disabled={storyQuery.isFetching || isGeneratingStory}
+                    onClick={handleGenerateStory}
                   >
-                    Gerar minha história
+                    {storyQuery.isFetching || isGeneratingStory
+                      ? 'Escrevendo sua história...'
+                      : 'Gerar minha história'}
                   </button>
                 </div>
               </div>
