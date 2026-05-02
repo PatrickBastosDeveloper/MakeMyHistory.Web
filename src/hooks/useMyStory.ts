@@ -1,0 +1,11 @@
+import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '../lib/queryKeys';
+import { getMyStory } from '../services/storyService';
+
+export function useMyStory(userId: string) {
+  return useQuery({
+    queryKey: queryKeys.story.me(userId),
+    queryFn: () => getMyStory(),
+    enabled: Boolean(userId),
+  });
+}
