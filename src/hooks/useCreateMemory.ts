@@ -69,12 +69,30 @@ export function useCreateMemory() {
 
       return { previous, userId };
     },
-    onError: (_error, _variables, context) => {
+    onError: (_error, variables, context) => {
       if (!context) {
         return;
       }
 
-      queryClient.setQueryData(queryKeys.memories.timeline(context.userId), context.previous);
+      queryClient.setQueryData<{ memories: MemoryUI[] }>(
+        queryKeys.memories.timeline(context.userId),
+        (current) => {
+          const memories = current?.memories ?? [];
+
+          return {
+            memories: memories.map((memory) => {
+              if (memory.clientRequestId !== variables.clientRequestId && memory.tempId !== `temp-${variables.clientRequestId}`) {
+                return memory;
+              }
+
+              return {
+                ...memory,
+                status: 'error',
+              };
+            }),
+          };
+        },
+      );
     },
     onSuccess: (response, variables) => {
       queryClient.setQueryData<{ memories: MemoryUI[] }>(
