@@ -7,7 +7,11 @@ const DEFAULT_LIMIT = 50;
 export function useMemoriesTimeline(userId: string) {
   return useQuery({
     queryKey: queryKeys.memories.timeline(userId),
-    queryFn: () => getMemories(DEFAULT_LIMIT),
+    queryFn: async () => {
+      const response = await getMemories(DEFAULT_LIMIT);
+
+      return response;
+    },
     enabled: Boolean(userId),
   });
 }

@@ -177,12 +177,20 @@ export function HomePage() {
             ) : (
               <ul className="timeline-list">
                 {memories.map((memory) => (
-                  <li key={memory.id} className="timeline-item">
+                  <li key={memory.id} className={`timeline-item timeline-item--${memory.status}`}>
                     <div className="timeline-item-header">
                       <strong>{memory.title ?? 'Memória sem título'}</strong>
                       <span>{formatMemoryDate(memory.createdAt)}</span>
                     </div>
                     <p>{memory.content}</p>
+                    {memory.status === 'pending' ? (
+                      <span className="timeline-status timeline-status--pending">Guardando...</span>
+                    ) : null}
+                    {memory.status === 'error' ? (
+                      <span className="timeline-status timeline-status--error">
+                        Não foi possível guardar
+                      </span>
+                    ) : null}
                   </li>
                 ))}
               </ul>

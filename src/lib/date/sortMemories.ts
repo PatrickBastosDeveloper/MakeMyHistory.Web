@@ -1,6 +1,6 @@
-import type { Memory } from '../../types/memory';
+import type { MemoryUI } from '../../types/memory';
 
-export function sortMemories(memories: Memory[]) {
+export function sortMemories(memories: MemoryUI[]) {
   return [...memories].sort((a, b) => {
     if (a.eventDate && b.eventDate) {
       return new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime();
