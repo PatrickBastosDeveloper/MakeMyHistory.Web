@@ -15,6 +15,7 @@ import { useCreateMemory } from '../../hooks/useCreateMemory';
 import { useMemoriesTimeline } from '../../hooks/useMemoriesTimeline';
 import { useMyStory } from '../../hooks/useMyStory';
 import { useAuth } from '../auth/AuthProvider';
+import type { DateType } from '../../types/memory';
 
 declare global {
   interface WindowEventMap {
@@ -38,6 +39,10 @@ export function HomePage() {
   const storyQuery = useMyStory(userId);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [dateType, setDateType] = useState<DateType | null>(null);
+  const [customDate, setCustomDate] = useState('');
+  const [customYear, setCustomYear] = useState('');
+  const [customAge, setCustomAge] = useState('');
   const [isGeneratingStory, setIsGeneratingStory] = useState(false);
   const [installPromptEvent, setInstallPromptEvent] = useState<BeforeInstallPromptEvent | null>(null);
   const hasTrackedAppOpen = useRef(false);
@@ -64,9 +69,34 @@ export function HomePage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!import.meta.env.DEV) {
+      return;
+    }
+
+    const memoriesValue = (memoriesQuery.data as any)?.memories;
+    const memLen = Array.isArray(memoriesValue) ? memoriesValue.length : null;
+
+    // eslint-disable-next-line no-console
+    console.debug(
+      '[HomePage effect]',
+      'isLoading=',
+      memoriesQuery.isLoading,
+      'isError=',
+      memoriesQuery.isError,
+      'data.memoriesType=',
+      memoriesValue === undefined ? 'undefined' : Array.isArray(memoriesValue) ? 'array' : typeof memoriesValue,
+      'memLen=',
+      memLen,
+    );
+  }, [memoriesQuery.isLoading, memoriesQuery.isError, memoriesQuery.data]);
+
   const memories = useMemo(() => {
     return sortMemories(memoriesQuery.data?.memories ?? []).slice(0, MAX_MEMORIES_VISIBLE);
   }, [memoriesQuery.data?.memories]);
+
+  const memoriesData = memoriesQuery.data?.memories;
+  const hasMemoriesData = Array.isArray(memoriesData);
 
   const handleRefresh = () => {
     showToast({
@@ -181,6 +211,80 @@ export function HomePage() {
                   <span className="timeline-count">{content.length} / 500</span>
                 </div>
 
+                <div className="date-type-selector">
+                  <span className="date-type-selector__label">+ Quando isso aconteceu?</span>
+                  <div className="date-type-options">
+                    {(['FullDate', 'YearOnly', 'Age'] as DateType[]).map((type) => (
+                      <label
+                        key={type}
+                        className={`date-type-option${dateType === type ? ' date-type-option--selected' : ''}`}
+                      >
+                        <input
+                          type="radio"
+                          name="dateType"
+                          value={type}
+                          checked={dateType === type}
+                          onChange={() => setDateType(type)}
+                        />
+                        {type === 'FullDate' ? '📅 Data completa' : type === 'YearOnly' ? '🗓️ Apenas ano' : '🎂 Idade na época'}
+                      </label>
+                    ))}
+                  </div>
+
+                  {dateType === 'FullDate' && (
+                    <div className="date-value-input">
+                      <input
+                        className="input"
+                        type="text"
+                        value={customDate}
+                        onChange={(e) => {
+                          const raw = e.target.value;
+                          // Allow only digits and slashes
+                          const cleaned = raw.replace(/[^\d/]/g, '');
+                          // Auto-add slash after day and month
+                          let formatted = cleaned;
+                          if (cleaned.length === 2 && !cleaned.includes('/') && customDate.length < 2) {
+                            formatted = cleaned + '/';
+                          } else if (cleaned.length === 5 && cleaned[2] === '/' && !cleaned.slice(3).includes('/') && customDate.length < 5) {
+                            formatted = cleaned + '/';
+                          }
+                          setCustomDate(formatted);
+                        }}
+                        placeholder="dd/mm/aaaa"
+                        maxLength={10}
+                      />
+                    </div>
+                  )}
+
+                  {dateType === 'YearOnly' && (
+                    <div className="date-value-input">
+                      <input
+                        className="input"
+                        type="number"
+                        min={1900}
+                        max={new Date().getFullYear()}
+                        value={customYear}
+                        onChange={(e) => setCustomYear(e.target.value)}
+                        placeholder="Ex: 2018"
+                      />
+                    </div>
+                  )}
+
+                  {dateType === 'Age' && (
+                    <div className="date-value-input">
+                      <input
+                        className="input"
+                        type="number"
+                        min={0}
+                        max={120}
+                        value={customAge}
+                        onChange={(e) => setCustomAge(e.target.value)}
+                        placeholder="Ex: 25"
+                      />
+                    </div>
+                  )}
+                </div>
+
                 <div className="hero-actions">
                   <Button
                     type="button"
@@ -198,31 +302,63 @@ export function HomePage() {
                         return;
                       }
 
-                      createMemoryMutation.mutate(
-                        {
-                          userId,
-                          title: title.trim() || undefined,
-                          content: content.trim(),
-                          clientRequestId: crypto.randomUUID(),
+                      const payload: {
+                        userId: string;
+                        title?: string;
+                        content: string;
+                        dateType?: DateType;
+                        eventDate?: string;
+                        eventYear?: number;
+                        age?: number;
+                        clientRequestId: string;
+                      } = {
+                        userId,
+                        title: title.trim() || undefined,
+                        content: content.trim(),
+                        clientRequestId: crypto.randomUUID(),
+                      };
+
+                      if (dateType && dateType === 'FullDate' && customDate) {
+                        payload.dateType = 'FullDate';
+                        // Convert dd/mm/aaaa to ISO (yyyy-mm-dd) for the API
+                        const parts = customDate.split('/');
+                        if (parts.length === 3) {
+                          const [day, month, year] = parts;
+                          const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                          payload.eventDate = isoDate;
+                          payload.eventYear = parseInt(year, 10);
+                        }
+                      } else if (dateType === 'YearOnly' && customYear) {
+                        payload.dateType = 'YearOnly';
+                        payload.eventYear = parseInt(customYear, 10);
+                      } else if (dateType === 'Age' && customAge) {
+                        payload.dateType = 'Age';
+                        payload.age = parseInt(customAge, 10);
+                        const birthYearEstimate = new Date().getFullYear() - parseInt(customAge, 10);
+                        payload.eventYear = birthYearEstimate;
+                      }
+
+                      createMemoryMutation.mutate(payload, {
+                        onSuccess: () => {
+                          track('memory_created');
+                          showToast({
+                            message: `Memória guardada em ${formatMemoryDate(new Date())}.`,
+                            variant: 'success',
+                          });
+                          setTitle('');
+                          setContent('');
+                          setDateType(null);
+                          setCustomDate('');
+                          setCustomYear('');
+                          setCustomAge('');
                         },
-                        {
-                          onSuccess: () => {
-                            track('memory_created');
-                            showToast({
-                              message: `Memória guardada em ${formatMemoryDate(new Date())}.`,
-                              variant: 'success',
-                            });
-                            setTitle('');
-                            setContent('');
-                          },
-                          onError: () => {
-                            showToast({
-                              message: 'Não foi possível guardar a memória.',
-                              variant: 'error',
-                            });
-                          },
+                        onError: () => {
+                          showToast({
+                            message: 'Não foi possível guardar a memória.',
+                            variant: 'error',
+                          });
                         },
-                      );
+                      });
                     }}
                   >
                     {createMemoryMutation.isPending ? 'Guardando...' : 'Salvar memória'}
@@ -237,7 +373,7 @@ export function HomePage() {
                 subtitle={
                   memoriesQuery.isFetching
                     ? 'Atualizando...'
-                    : memoriesQuery.isLoading
+                    : memoriesQuery.isLoading || !hasMemoriesData
                       ? 'Carregando...'
                       : `${memories.length} memórias`
                 }
@@ -248,7 +384,7 @@ export function HomePage() {
                 }
               />
 
-              {memoriesQuery.isLoading ? (
+              {memoriesQuery.isLoading || (!hasMemoriesData && !memoriesQuery.isError) ? (
                 <LoadingState label="Carregando memórias..." />
               ) : memoriesQuery.isError ? (
                 <EmptyState

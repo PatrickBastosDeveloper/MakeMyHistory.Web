@@ -402,6 +402,63 @@ h1 {
   border-color: rgba(239, 68, 68, 0.22);
 }
 
+.date-type-selector {
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.date-type-selector__label {
+  font-size: 0.92rem;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.date-type-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+
+.date-type-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  background: rgba(2, 6, 23, 0.55);
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+  user-select: none;
+}
+
+.date-type-option:hover {
+  border-color: rgba(125, 211, 252, 0.35);
+  color: #d9f0ff;
+}
+
+.date-type-option--selected {
+  border-color: rgba(125, 211, 252, 0.5);
+  background: rgba(15, 118, 110, 0.2);
+  color: #d9f0ff;
+}
+
+.date-type-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.date-value-input {
+  margin-top: 4px;
+}
+
 .story-card {
   border-radius: 18px;
   border: 1px solid rgba(125, 211, 252, 0.14);

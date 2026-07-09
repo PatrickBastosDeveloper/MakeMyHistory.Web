@@ -1,16 +1,26 @@
 import { httpClient } from './httpClient';
-import type { MemoryUI } from '../types/memory';
+import type { DateType, MemoryUI } from '../types/memory';
 
 export type CreateMemoryRequest = {
   title?: string;
   content: string;
+  dateType?: DateType;
   eventDate?: string;
   eventYear?: number;
+  age?: number;
   clientRequestId: string;
 };
 
 export type CreateMemoryResponse = {
-  memory: MemoryUI;
+  memoryId: string;
+  userId: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  isImportant: boolean;
+  clientRequestId?: string | null;
+  eventDate?: string | null;
+  eventYear?: number | null;
 };
 
 export type MemoriesListResponse = {

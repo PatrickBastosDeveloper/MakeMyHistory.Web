@@ -22,6 +22,11 @@ export async function httpClient<T>(path: string, options: RequestOptions = {}):
     headers.set('X-User-Id', options.userId);
   }
 
+  if (import.meta.env.DEV && (path.startsWith('/api/memories') || path.startsWith('/api/stories/me'))) {
+    // eslint-disable-next-line no-console
+    console.debug(`[api] path=${path} baseUrl=${baseUrl} userId=${options.userId ?? ''}`);
+  }
+
   const response = await fetch(`${baseUrl}${path}`, {
     ...options,
     headers,

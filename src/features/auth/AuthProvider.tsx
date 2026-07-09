@@ -21,7 +21,33 @@ function createUserId() {
   return crypto.randomUUID();
 }
 
+function getUserIdFromUrl() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const userIdFromUrl = params.get('userId');
+
+    if (!userIdFromUrl) {
+      return null;
+    }
+
+    // Valida como UUID (sem impor versão/variant)
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      userIdFromUrl,
+    )
+      ? userIdFromUrl
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 function getInitialUserId() {
+  const userIdFromUrl = getUserIdFromUrl();
+  if (userIdFromUrl) {
+    window.localStorage.setItem(USER_ID_STORAGE_KEY, userIdFromUrl);
+    return userIdFromUrl;
+  }
+
   const storedUserId = getStoredUserId();
 
   if (storedUserId) {
@@ -46,9 +72,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     return getInitialUserId();
   });
-  const [isReady, setIsReady] = useState(false);
+  const [isReady, setIsReady] = useState(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    // Se já tem userId no storage, já está pronto
+    return Boolean(getStoredUserId()) || Boolean(getUserIdFromUrl());
+  });
 
   useEffect(() => {
+    const userIdFromUrl = getUserIdFromUrl();
+
+    if (userIdFromUrl) {
+      window.localStorage.setItem(USER_ID_STORAGE_KEY, userIdFromUrl);
+      setUserId(userIdFromUrl);
+      setIsReady(true);
+      return;
+    }
+
     const currentUserId = getStoredUserId();
 
     if (currentUserId) {

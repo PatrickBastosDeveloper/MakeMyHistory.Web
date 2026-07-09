@@ -40,7 +40,7 @@ export function useCreateMemory() {
 
   return useMutation({
     mutationFn: async ({ userId: _userId, ...payload }: CreateMemoryInput) => {
-      return createMemory(payload);
+      return createMemory(payload, _userId);
     },
     onMutate: async ({ userId, ...payload }) => {
       const queryKey = queryKeys.memories.timeline(userId);
@@ -107,7 +107,14 @@ export function useCreateMemory() {
               }
 
               return {
-                ...response.memory,
+                ...memory,
+                id: response.memoryId,
+                title: response.title,
+                content: response.content,
+                createdAt: response.createdAt,
+                isImportant: response.isImportant,
+                eventDate: response.eventDate ?? undefined,
+                eventYear: response.eventYear ?? undefined,
                 status: 'success',
                 clientRequestId: variables.clientRequestId,
                 tempId: `temp-${variables.clientRequestId}`,
