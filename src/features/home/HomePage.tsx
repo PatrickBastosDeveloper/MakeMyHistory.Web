@@ -601,7 +601,7 @@ export function HomePage() {
                     </article>
                   ) : (
                     <div className="story-placeholder-card">
-                      <div className="story-placeholder-card__icon">âœ¨</div>
+                      <div className="story-placeholder-card__icon">✨</div>
                       <div className="story-placeholder-card__title">Sua história aparecerá aqui</div>
                       {successMemories.length >= MIN_MEMORIES_FOR_STORY ? null : successMemories.length === 2 ? (
                         <p className="story-placeholder-card__desc">Falta apenas 1 memória para gerar sua primeira história.</p>
