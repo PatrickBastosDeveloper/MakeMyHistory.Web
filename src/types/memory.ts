@@ -18,4 +18,8 @@ export type MemoryUI = Memory & {
   status: MemoryStatus;
   clientRequestId?: string;
   tempId?: string;
+  errorMessage?: string;
+  isRetryable?: boolean;
+  isImportant?: boolean;
+  isValidationError?: boolean;
 };

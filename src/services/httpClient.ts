@@ -54,19 +54,17 @@ async function readErrorMessage(response: Response): Promise<string> {
   if (contentType.includes('application/json')) {
     const payload: unknown = await response.json();
 
-    if (isAppErrorPayload(payload)) {
-      return payload.message;
+    // Backend retorna { error: "mensagem" }, AppError tem message
+    if (typeof payload === 'object' && payload !== null) {
+      const obj = payload as Record<string, unknown>;
+      if (typeof obj.error === 'string') {
+        return obj.error;
+      }
+      if (typeof obj.message === 'string') {
+        return obj.message;
+      }
     }
   }
 
-  return 'Ocorreu um erro inesperado.';
-}
-
-function isAppErrorPayload(payload: unknown): payload is AppError {
-  return (
-    typeof payload === 'object' &&
-    payload !== null &&
-    'message' in payload &&
-    typeof (payload as AppError).message === 'string'
-  );
+  return 'Ocorreu um erro inesperado. Verifique os dados e tente novamente.';
 }

@@ -1,3 +1,11 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Test / temp files
+tmp/
+
 # Logs
 logs
 *.log

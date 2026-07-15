@@ -7,5 +7,15 @@ export function useMyStory(userId: string) {
     queryKey: queryKeys.story.me(userId),
     queryFn: () => getMyStory(userId),
     enabled: Boolean(userId),
+    retry: false,
+  });
+}
+
+export function useStoryGenerationStatus(userId: string, memoriesCount: number) {
+  return useQuery({
+    queryKey: queryKeys.story.me(userId),
+    queryFn: () => getMyStory(userId),
+    enabled: Boolean(userId) && memoriesCount >= 3,
+    retry: false,
   });
 }

@@ -20,6 +20,9 @@ export function useMemoriesTimeline(userId: string) {
         eventDate?: string | null;
         eventYear?: number | null;
         isImportant?: boolean;
+        dateType?: string | null;
+        age?: number | null;
+        isDateInferred?: boolean | null;
       };
 
       const anyResponse = response as unknown as { memories?: unknown; Memories?: unknown };
@@ -30,11 +33,14 @@ export function useMemoriesTimeline(userId: string) {
 
       const memories: MemoryUI[] = rawMemories.map((m) => ({
         id: m.id,
-        title: m.title ?? undefined,
+        title: (!m.title || m.title === 'Sem título') ? undefined : m.title,
         content: m.content,
         createdAt: m.createdAt,
         eventDate: m.eventDate ?? undefined,
         eventYear: m.eventYear ?? undefined,
+        dateType: (m.dateType as any) ?? undefined,
+        age: m.age ?? undefined,
+        isDateInferred: m.isDateInferred ?? undefined,
         clientRequestId: m.clientRequestId ?? undefined,
         status: 'success',
       }));

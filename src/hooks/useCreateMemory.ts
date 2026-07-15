@@ -74,6 +74,23 @@ export function useCreateMemory() {
         return;
       }
 
+      const appError = _error && typeof _error === 'object'
+        ? (_error as { message: string; code?: string })
+        : null;
+
+      const errorMessage = appError?.message ?? 'Não foi possível guardar sua memória.';
+      const errorCode = appError?.code;
+
+      // Validation errors (400) → NOT retryable, user must fix input
+      // Network errors (no code, "Failed to fetch") → retryable
+      // Server errors (500, 502, 503) → retryable
+      const is400 = errorCode === '400';
+      const isNetworkError = !errorCode;
+      const isValidationError = is400;
+      const isRetryable = isNetworkError || Boolean(
+        errorCode && (errorCode === '500' || errorCode === '503' || errorCode === '502'),
+      );
+
       queryClient.setQueryData<{ memories: MemoryUI[] }>(
         queryKeys.memories.timeline(context.userId),
         (current) => {
@@ -88,6 +105,9 @@ export function useCreateMemory() {
               return {
                 ...memory,
                 status: 'error',
+                errorMessage,
+                isRetryable,
+                isValidationError,
               };
             }),
           };
@@ -109,7 +129,7 @@ export function useCreateMemory() {
               return {
                 ...memory,
                 id: response.memoryId,
-                title: response.title,
+                title: (!response.title || response.title === 'Sem título') ? undefined : response.title,
                 content: response.content,
                 createdAt: response.createdAt,
                 isImportant: response.isImportant,
