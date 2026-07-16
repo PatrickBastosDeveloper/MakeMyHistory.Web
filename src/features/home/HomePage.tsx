@@ -310,7 +310,14 @@ export function HomePage() {
     );
   }, [deletingMemory, userId, deleteMemoryMutation, showToast, handleCloseDelete]);
 
-  const canSubmit = Boolean(content.trim()) && !createMemoryMutation.isPending;
+  const dateError = dateType === 'FullDate' ? getFullDateError()
+    : dateType === 'YearOnly' ? getYearError()
+    : dateType === 'Age' ? getAgeError()
+    : null;
+
+  const hasDateError = dateType !== null && dateError !== null;
+
+  const canSubmit = Boolean(content.trim()) && !createMemoryMutation.isPending && !hasDateError;
 
   if (!isReady) {
     return (
