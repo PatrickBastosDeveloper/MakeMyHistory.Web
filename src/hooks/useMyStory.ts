@@ -8,6 +8,8 @@ export function useMyStory(userId: string) {
     queryFn: () => getMyStory(userId),
     enabled: Boolean(userId),
     retry: false,
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 }
 
@@ -17,5 +19,7 @@ export function useStoryGenerationStatus(userId: string, memoriesCount: number) 
     queryFn: () => getMyStory(userId),
     enabled: Boolean(userId) && memoriesCount >= 3,
     retry: false,
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 }
