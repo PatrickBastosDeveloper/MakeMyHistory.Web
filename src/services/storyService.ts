@@ -13,10 +13,14 @@ type RawStoryResponse = {
 };
 
 export async function getMyStory(userId?: string): Promise<StoryResponse> {
+  const t0 = performance.now();
+  console.log(`[story-flow] ${new Date().toISOString()} getMyStory START userId=${userId}`);
   try {
     const raw = await httpClient<RawStoryResponse>('/api/stories/me', {
       userId,
     });
+    const t1 = performance.now();
+    console.log(`[story-flow] ${new Date().toISOString()} getMyStory DONE duration=${(t1 - t0).toFixed(0)}ms hasStory=${raw.hasStory} storyLen=${raw.story?.length ?? 0}`);
     if (!raw.hasStory || !raw.story) {
       return { totalMemories: raw.totalMemories };
     }
@@ -31,6 +35,8 @@ export async function getMyStory(userId?: string): Promise<StoryResponse> {
       isOutOfSync: raw.isOutOfSync ?? false,
     };
   } catch (err: unknown) {
+    const t1 = performance.now();
+    console.log(`[story-flow] ${new Date().toISOString()} getMyStory ERROR duration=${(t1 - t0).toFixed(0)}ms`);
     const appErr = err as { code?: string; message?: string };
     if (appErr.code === '404') {
       return {};
@@ -48,15 +54,21 @@ type RawGenerateResponse = {
 };
 
 export function generateStory(userId?: string): Promise<StoryResponse> {
+  const t0 = performance.now();
+  console.log(`[story-flow] ${new Date().toISOString()} generateStory START userId=${userId}`);
   return httpClient<RawGenerateResponse>('/api/stories', {
     method: 'POST',
     userId,
-  }).then((raw) => ({
-    story: {
-      content: raw.story,
-      title: raw.title,
-      memoryCount: raw.memoryCount,
-      updatedAt: raw.updatedAt,
-    },
-  }));
+  }).then((raw) => {
+    const t1 = performance.now();
+    console.log(`[story-flow] ${new Date().toISOString()} generateStory DONE duration=${(t1 - t0).toFixed(0)}ms storyLen=${raw.story?.length ?? 0}`);
+    return {
+      story: {
+        content: raw.story,
+        title: raw.title,
+        memoryCount: raw.memoryCount,
+        updatedAt: raw.updatedAt,
+      },
+    };
+  });
 }

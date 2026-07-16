@@ -6,7 +6,17 @@ import { App } from './app/App';
 import { AuthProvider } from './features/auth/AuthProvider';
 import './style.css';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: 5 * 60 * 1000,    // 5 min garbage collection
+      staleTime: 30_000,         // 30s before marking stale
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      retry: false,
+    },
+  },
+});
 
 const container = document.getElementById('app');
 

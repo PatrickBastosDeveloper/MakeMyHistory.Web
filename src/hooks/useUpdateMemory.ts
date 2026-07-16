@@ -19,10 +19,6 @@ export function useUpdateMemory() {
       void queryClient.invalidateQueries({
         queryKey: queryKeys.memories.timeline(variables.userId),
       });
-
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys.story.me(variables.userId),
-      });
     },
   });
 }
