@@ -19,6 +19,10 @@ export function useUpdateMemory() {
       void queryClient.invalidateQueries({
         queryKey: queryKeys.memories.timeline(variables.userId),
       });
+      // Story may be out of sync after edit
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.story.me(variables.userId),
+      });
     },
   });
 }

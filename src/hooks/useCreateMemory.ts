@@ -147,6 +147,11 @@ export function useCreateMemory() {
       void queryClient.invalidateQueries({
         queryKey: queryKeys.memories.timeline(variables.userId),
       });
+
+      // Update story status: memory count changed → story is now out of sync
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.story.me(variables.userId),
+      });
     },
   });
 }

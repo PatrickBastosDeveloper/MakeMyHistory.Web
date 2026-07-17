@@ -12,7 +12,6 @@ import { ShareMenu } from '../../components/ShareMenu';
 import { LoadingState } from '../../components/LoadingState';
 import { TextArea } from '../../components/TextArea';
 import { formatMemoryDate } from '../../lib/date/formatMemoryDate';
-import { sortMemories } from '../../lib/date/sortMemories';
 import { deriveTitle } from '../../lib/text/deriveTitle';
 import { track } from '../../lib/track/track';
 import { useToast } from '../../lib/toast/useToast';
@@ -132,7 +131,7 @@ export function HomePage() {
   }, []);
 
   const allMemories = useMemo(() => {
-    return sortMemories(memoriesQuery.data?.memories ?? []);
+    return memoriesQuery.data?.memories ?? [];
   }, [memoriesQuery.data?.memories]);
 
   const memories = useMemo(() => {
@@ -646,8 +645,8 @@ export function HomePage() {
                   <EmptyState title="Não foi possível carregar a timeline." description="Verifique sua conexão e tente novamente." />
                 ) : allMemories.length === 0 ? (
                   <EmptyState
-                    title="Sua timeline está vazia. Escreva a primeira memória."
-                    description="Use o card à esquerda para começar a preencher sua história."
+                    title="Sua timeline está vazia."
+                    description="Registre sua primeira memória para começar sua história."
                   />
                 ) : (
                   <>

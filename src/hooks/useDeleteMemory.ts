@@ -18,6 +18,10 @@ export function useDeleteMemory() {
       void queryClient.invalidateQueries({
         queryKey: queryKeys.memories.timeline(variables.userId),
       });
+      // Story may be out of sync after deletion
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.story.me(variables.userId),
+      });
     },
   });
 }
