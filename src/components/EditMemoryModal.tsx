@@ -26,7 +26,15 @@ type EditMemoryModalProps = {
   onSave: (payload: EditMemoryPayload) => void;
 };
 
+type DateValues = {
+  FullDate: string;
+  YearOnly: string;
+  Age: string;
+};
+
 const currentYear = new Date().getFullYear();
+
+const EMPTY_DATE_VALUES: DateValues = { FullDate: '', YearOnly: '', Age: '' };
 
 function getFullDateError(customDate: string): string | null {
   if (!customDate) return null;
@@ -67,18 +75,27 @@ export function EditMemoryModal({ memory, isOpen, isSaving, onClose, onSave }: E
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [dateType, setDateType] = useState<DateType | null>(null);
-  const [customDate, setCustomDate] = useState('');
-  const [customYear, setCustomYear] = useState('');
-  const [customAge, setCustomAge] = useState('');
+  const [dateValues, setDateValues] = useState<DateValues>(EMPTY_DATE_VALUES);
 
   useEffect(() => {
     if (memory) {
       setTitle(memory.title ?? '');
       setContent(memory.content);
       setDateType(memory.dateType ?? null);
-      setCustomDate(memory.eventDate ? formatStoredDateToInput(memory.eventDate) : '');
-      setCustomYear(memory.eventYear ? String(memory.eventYear) : '');
-      setCustomAge(memory.age ? String(memory.age) : '');
+
+      // Only populate the input value for the currently active date type.
+      // Other types remain empty — they will be populated only when the
+      // user manually switches to them and types. This prevents e.g. an
+      // Age memory's computed EventYear from appearing in the YearOnly input.
+      const next: DateValues = { FullDate: '', YearOnly: '', Age: '' };
+      if (memory.dateType === 'FullDate' && memory.eventDate) {
+        next.FullDate = formatStoredDateToInput(memory.eventDate);
+      } else if (memory.dateType === 'YearOnly' && memory.eventYear) {
+        next.YearOnly = String(memory.eventYear);
+      } else if (memory.dateType === 'Age' && memory.age) {
+        next.Age = String(memory.age);
+      }
+      setDateValues(next);
     }
   }, [memory]);
 
@@ -87,14 +104,31 @@ export function EditMemoryModal({ memory, isOpen, isSaving, onClose, onSave }: E
     return deriveTitle(content);
   }, [content]);
 
-  const dateError = dateType === 'FullDate' ? getFullDateError(customDate)
-    : dateType === 'YearOnly' ? getYearError(customYear)
-    : dateType === 'Age' ? getAgeError(customAge)
+  const currentDateValue = dateType ? dateValues[dateType] : '';
+
+  const dateError = dateType === 'FullDate' ? getFullDateError(currentDateValue)
+    : dateType === 'YearOnly' ? getYearError(currentDateValue)
+    : dateType === 'Age' ? getAgeError(currentDateValue)
     : null;
 
+  // A date error only exists when there is actual invalid content in the field.
+  // Empty fields are not errors — the user can select a type and not fill it.
   const hasDateError = dateType !== null && dateError !== null;
 
+  // Button is disabled only when:
+  // - content is empty, OR
+  // - a save is in progress, OR
+  // - the typed value has a validation error (invalid format, out of range)
+  // An empty date field is NOT an error.
   const canSave = Boolean(content.trim()) && !isSaving && !hasDateError;
+
+  const handleDateTypeChange = useCallback((type: DateType) => {
+    setDateType(type);
+  }, []);
+
+  const handleDateValueChange = useCallback((type: DateType, value: string) => {
+    setDateValues((prev) => ({ ...prev, [type]: value }));
+  }, []);
 
   const handleSave = useCallback(() => {
     if (!canSave || !memory) return;
@@ -103,25 +137,25 @@ export function EditMemoryModal({ memory, isOpen, isSaving, onClose, onSave }: E
       content: content.trim(),
       isImportant: memory.isImportant ?? false,
     };
-    if (dateType && dateType === 'FullDate' && customDate) {
-      const parts = customDate.split('/');
+    if (dateType && dateType === 'FullDate' && dateValues.FullDate) {
+      const parts = dateValues.FullDate.split('/');
       if (parts.length === 3) {
         const [day, month, yearStr] = parts;
         payload.dateType = 'FullDate';
         payload.eventDate = `${yearStr}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
         payload.eventYear = parseInt(yearStr, 10);
       }
-    } else if (dateType === 'YearOnly' && customYear) {
+    } else if (dateType === 'YearOnly' && dateValues.YearOnly) {
       payload.dateType = 'YearOnly';
-      payload.eventYear = parseInt(customYear, 10);
-    } else if (dateType === 'Age' && customAge) {
-      const age = parseInt(customAge, 10);
+      payload.eventYear = parseInt(dateValues.YearOnly, 10);
+    } else if (dateType === 'Age' && dateValues.Age) {
+      const age = parseInt(dateValues.Age, 10);
       payload.dateType = 'Age';
       payload.age = age;
       payload.eventYear = currentYear - age;
     }
     onSave(payload);
-  }, [title, content, dateType, customDate, customYear, customAge, memory, canSave, onSave]);
+  }, [title, content, dateType, dateValues, memory, canSave, onSave]);
 
   if (!isOpen || !memory) {
     return null;
@@ -176,7 +210,7 @@ export function EditMemoryModal({ memory, isOpen, isSaving, onClose, onSave }: E
                     name="editDateType"
                     value={type}
                     checked={dateType === type}
-                    onChange={() => setDateType(type)}
+                    onChange={() => handleDateTypeChange(type)}
                   />
                   {type === 'FullDate' ? '📅 Data completa' : type === 'YearOnly' ? '🗓️ Apenas ano' : '🎂 Idade na época'}
                 </label>
@@ -186,44 +220,50 @@ export function EditMemoryModal({ memory, isOpen, isSaving, onClose, onSave }: E
             {dateType === 'FullDate' && (
               <div className="date-value-input">
                 <input
-                  className={['input', getFullDateError(customDate) ? 'input--invalid' : ''].filter(Boolean).join(' ')}
+                  className={['input', getFullDateError(currentDateValue) ? 'input--invalid' : ''].filter(Boolean).join(' ')}
                   type="text"
-                  value={customDate}
+                  value={currentDateValue}
                   onChange={(e) => {
                     const raw = e.target.value.replace(/[^\d/]/g, '');
                     let formatted = raw;
-                    if (raw.length === 2 && !raw.includes('/') && customDate.length < 2) formatted = raw + '/';
-                    else if (raw.length === 5 && raw[2] === '/' && !raw.slice(3).includes('/') && customDate.length < 5) formatted = raw + '/';
-                    setCustomDate(formatted);
+                    if (raw.length === 2 && !raw.includes('/') && currentDateValue.length < 2) formatted = raw + '/';
+                    else if (raw.length === 5 && raw[2] === '/' && !raw.slice(3).includes('/') && currentDateValue.length < 5) formatted = raw + '/';
+                    handleDateValueChange('FullDate', formatted);
                   }}
                   placeholder="dd/mm/aaaa"
                   maxLength={10}
                 />
-                {getFullDateError(customDate) ? <span className="date-value-error">{getFullDateError(customDate)}</span> : null}
+                {getFullDateError(currentDateValue) ? <span className="date-value-error">{getFullDateError(currentDateValue)}</span> : null}
               </div>
             )}
             {dateType === 'YearOnly' && (
               <div className="date-value-input">
                 <input
-                  className={['input', getYearError(customYear) ? 'input--invalid' : ''].filter(Boolean).join(' ')}
+                  className={['input', getYearError(currentDateValue) ? 'input--invalid' : ''].filter(Boolean).join(' ')}
                   type="text" inputMode="numeric"
-                  value={customYear}
-                  onChange={(e) => setCustomYear(e.target.value.replace(/[^\d]/g, ''))}
+                  value={currentDateValue}
+                  onChange={(e) => handleDateValueChange('YearOnly', e.target.value.replace(/[^\d]/g, ''))}
                   placeholder="Ex: 2018" maxLength={4}
                 />
-                {getYearError(customYear) ? <span className="date-value-error">{getYearError(customYear)}</span> : null}
+                {getYearError(currentDateValue) ? <span className="date-value-error">{getYearError(currentDateValue)}</span> : null}
               </div>
             )}
             {dateType === 'Age' && (
               <div className="date-value-input">
                 <input
-                  className={['input', getAgeError(customAge) ? 'input--invalid' : ''].filter(Boolean).join(' ')}
+                  className={['input', getAgeError(currentDateValue) ? 'input--invalid' : ''].filter(Boolean).join(' ')}
                   type="text" inputMode="numeric"
-                  value={customAge}
-                  onChange={(e) => setCustomAge(e.target.value.replace(/[^\d]/g, ''))}
+                  value={currentDateValue}
+                  onChange={(e) => handleDateValueChange('Age', e.target.value.replace(/[^\d]/g, ''))}
                   placeholder="Ex: 25" maxLength={3}
                 />
-                {getAgeError(customAge) ? <span className="date-value-error">{getAgeError(customAge)}</span> : null}
+                {getAgeError(currentDateValue) ? <span className="date-value-error">{getAgeError(currentDateValue)}</span> : null}
+                {currentDateValue && !getAgeError(currentDateValue) && (
+                  <div className="date-value-hint">
+                    ℹ️ Aproximadamente {currentYear - parseInt(currentDateValue, 10)}.
+                    Esse ano é usado para posicionar a memória na timeline.
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -521,6 +521,16 @@ h1 {
   line-height: 1.4;
 }
 
+.date-value-hint {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(125, 211, 252, 0.06);
+  border: 1px solid rgba(125, 211, 252, 0.1);
+}
+
 .story-meta {
   display: flex;
   flex-wrap: wrap;
