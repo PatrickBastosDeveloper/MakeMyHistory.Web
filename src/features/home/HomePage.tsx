@@ -22,6 +22,8 @@ import { useMemoriesTimeline } from '../../hooks/useMemoriesTimeline';
 import { useMyStory } from '../../hooks/useMyStory';
 import { useUpdateMemory } from '../../hooks/useUpdateMemory';
 import { useGenerateStory } from '../../hooks/useGenerateStory';
+import { useUserProfile, useSaveUserProfile } from '../../hooks/useUserProfile';
+import { ProfileModal } from '../../components/ProfileModal';
 import { useAuth } from '../auth/AuthProvider';
 import type { DateType, MemoryUI } from '../../types/memory';
 
@@ -257,6 +259,10 @@ export function HomePage() {
     setInstallPromptEvent(null);
   };
 
+  const profileQuery = useUserProfile(userId);
+  const saveProfileMutation = useSaveUserProfile();
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
   const [editingMemory, setEditingMemory] = useState<MemoryUI | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deletingMemory, setDeletingMemory] = useState<MemoryUI | null>(null);
@@ -308,6 +314,36 @@ export function HomePage() {
     setIsDeleteConfirmOpen(false);
     setDeletingMemory(null);
   }, []);
+
+  const handleOpenProfile = useCallback(() => {
+    setIsProfileModalOpen(true);
+  }, []);
+
+  const handleCloseProfile = useCallback(() => {
+    setIsProfileModalOpen(false);
+  }, []);
+
+  const handleSaveProfile = useCallback(
+    (data: { name: string; birthDate: string }) => {
+      saveProfileMutation.mutate(
+        { userId, ...data },
+        {
+          onSuccess: () => {
+            showToast({ message: 'Perfil atualizado com sucesso.', variant: 'success' });
+            setIsProfileModalOpen(false);
+          },
+          onError: (error) => {
+            const msg =
+              error && typeof error === 'object' && 'message' in error
+                ? (error as { message: string }).message
+                : 'Não foi possível salvar o perfil.';
+            showToast({ message: msg, variant: 'error' });
+          },
+        },
+      );
+    },
+    [userId, saveProfileMutation, showToast],
+  );
 
   const handleConfirmDelete = useCallback(() => {
     if (!deletingMemory) return;
@@ -367,6 +403,13 @@ export function HomePage() {
             action={
               <div className="section-actions">
                 <Badge variant="default">MVP</Badge>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setIsProfileModalOpen(true)}
+                >
+                  {profileQuery.data?.name ?? 'Editar perfil'}
+                </Button>
                 <Button
                   type="button"
                   variant="secondary"
@@ -791,6 +834,13 @@ export function HomePage() {
             : ''
         }
         onClose={() => setIsShareMenuOpen(false)}
+      />
+      <ProfileModal
+        isOpen={isProfileModalOpen}
+        profile={profileQuery.data}
+        isSaving={saveProfileMutation.isPending}
+        onClose={handleCloseProfile}
+        onSave={handleSaveProfile}
       />
       <ConfirmDialog
         isOpen={isDeleteConfirmOpen}

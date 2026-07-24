@@ -5,4 +5,7 @@ export const queryKeys = {
   story: {
     me: (userId: string) => ['story', 'me', userId] as const,
   },
+  user: {
+    profile: (userId: string) => ['user', 'profile', userId] as const,
+  },
 };
