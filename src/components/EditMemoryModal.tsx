@@ -16,6 +16,7 @@ type EditMemoryPayload = {
   title?: string;
   content: string;
   isImportant: boolean;
+  clearDateInformation?: boolean;
 } & EditMemoryDatePayload;
 
 type EditMemoryModalProps = {
@@ -111,6 +112,14 @@ export function EditMemoryModal({ memory, isOpen, isSaving, onClose, onSave }: E
     : dateType === 'Age' ? getAgeError(currentDateValue)
     : null;
 
+  const [noDate, setNoDate] = useState(false);
+
+  useEffect(() => {
+    if (memory) {
+      setNoDate(!memory.dateType);
+    }
+  }, [memory]);
+
   // A date error only exists when there is actual invalid content in the field.
   // Empty fields are not errors — the user can select a type and not fill it.
   const hasDateError = dateType !== null && dateError !== null;
@@ -119,8 +128,8 @@ export function EditMemoryModal({ memory, isOpen, isSaving, onClose, onSave }: E
   // - content is empty, OR
   // - a save is in progress, OR
   // - the typed value has a validation error (invalid format, out of range)
-  // An empty date field is NOT an error.
-  const canSave = Boolean(content.trim()) && !isSaving && !hasDateError;
+  // - a type is selected but the field is empty (value is required when type is selected)
+  const canSave = Boolean(content.trim()) && !isSaving && !hasDateError && (dateType === null || currentDateValue !== '');
 
   const handleDateTypeChange = useCallback((type: DateType) => {
     setDateType(type);
@@ -137,7 +146,9 @@ export function EditMemoryModal({ memory, isOpen, isSaving, onClose, onSave }: E
       content: content.trim(),
       isImportant: memory.isImportant ?? false,
     };
-    if (dateType && dateType === 'FullDate' && dateValues.FullDate) {
+    if (noDate) {
+      payload.clearDateInformation = true;
+    } else if (dateType && dateType === 'FullDate' && dateValues.FullDate) {
       const parts = dateValues.FullDate.split('/');
       if (parts.length === 3) {
         const [day, month, yearStr] = parts;
@@ -155,7 +166,7 @@ export function EditMemoryModal({ memory, isOpen, isSaving, onClose, onSave }: E
       payload.eventYear = currentYear - age;
     }
     onSave(payload);
-  }, [title, content, dateType, dateValues, memory, canSave, onSave]);
+  }, [title, content, dateType, dateValues, memory, canSave, onSave, noDate]);
 
   if (!isOpen || !memory) {
     return null;
@@ -198,6 +209,24 @@ export function EditMemoryModal({ memory, isOpen, isSaving, onClose, onSave }: E
           />
 
           <div className="date-type-selector">
+            <label className="date-type-checkbox">
+              <input
+                type="checkbox"
+                checked={noDate}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setNoDate(checked);
+                  if (checked) {
+                    setDateType(null);
+                    setDateValues(EMPTY_DATE_VALUES);
+                  }
+                }}
+              />
+              <span>Sem data</span>
+            </label>
+
+            {!noDate && (
+              <>
             <span className="date-type-selector__label">Quando isso aconteceu?</span>
             <div className="date-type-options">
               {(['FullDate', 'YearOnly', 'Age'] as DateType[]).map((type) => (
@@ -258,13 +287,9 @@ export function EditMemoryModal({ memory, isOpen, isSaving, onClose, onSave }: E
                   placeholder="Ex: 25" maxLength={3}
                 />
                 {getAgeError(currentDateValue) ? <span className="date-value-error">{getAgeError(currentDateValue)}</span> : null}
-                {currentDateValue && !getAgeError(currentDateValue) && (
-                  <div className="date-value-hint">
-                    ℹ️ Aproximadamente {currentYear - parseInt(currentDateValue, 10)}.
-                    Esse ano é usado para posicionar a memória na timeline.
-                  </div>
-                )}
               </div>
+            )}
+              </>
             )}
           </div>
         </div>

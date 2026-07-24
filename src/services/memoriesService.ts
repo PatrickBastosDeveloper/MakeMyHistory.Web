@@ -31,6 +31,7 @@ export type UpdateMemoryRequest = {
   eventDate?: string;
   eventYear?: number;
   age?: number;
+  clearDateInformation?: boolean;
 };
 
 export type UpdateMemoryResponse = {
