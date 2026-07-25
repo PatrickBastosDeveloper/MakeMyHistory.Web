@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Button } from './Button';
+import { Button } from '../../components/Button';
 
 type ProfileModalProps = {
   isOpen: boolean;
@@ -14,18 +14,6 @@ type ValidationErrors = {
   birthDate?: string;
 };
 
-function formatDateInput(isoDate?: string | null): string {
-  if (!isoDate) return '';
-  return isoDate; // already yyyy-mm-dd from backend
-}
-
-function parseDateForApi(dateStr: string): string | null {
-  if (!dateStr) return null;
-  const d = new Date(dateStr + 'T00:00:00');
-  if (isNaN(d.getTime())) return null;
-  return d.toISOString().split('T')[0];
-}
-
 export function ProfileModal({ isOpen, onClose, onSave, profile, isSaving }: ProfileModalProps) {
   const [name, setName] = useState('');
   const [birthDate, setBirthDate] = useState('');
@@ -34,7 +22,7 @@ export function ProfileModal({ isOpen, onClose, onSave, profile, isSaving }: Pro
   useEffect(() => {
     if (isOpen) {
       setName(profile?.name ?? '');
-      setBirthDate(formatDateInput(profile?.birthDate));
+      setBirthDate(profile?.birthDate ?? '');
       setErrors({});
     }
   }, [isOpen, profile]);
@@ -61,7 +49,7 @@ export function ProfileModal({ isOpen, onClose, onSave, profile, isSaving }: Pro
     const errs = validate();
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
-    const apiDate = parseDateForApi(birthDate);
+    const apiDate = birthDate ? new Date(birthDate + 'T00:00:00').toISOString().split('T')[0] : '';
     if (!apiDate) return;
     onSave({ name: name.trim(), birthDate: apiDate });
   }, [name, birthDate, validate, onSave]);
@@ -106,12 +94,8 @@ export function ProfileModal({ isOpen, onClose, onSave, profile, isSaving }: Pro
           </div>
         </div>
         <div className="modal__footer">
-          <Button type="button" variant="ghost" onClick={onClose} disabled={isSaving}>
-            Cancelar
-          </Button>
-          <Button type="button" disabled={!canSave} onClick={handleSave}>
-            {isSaving ? 'Salvando...' : 'Salvar'}
-          </Button>
+          <Button type="button" variant="ghost" onClick={onClose} disabled={isSaving}>Cancelar</Button>
+          <Button type="button" disabled={!canSave} onClick={handleSave}>{isSaving ? 'Salvando...' : 'Salvar'}</Button>
         </div>
       </div>
     </div>
