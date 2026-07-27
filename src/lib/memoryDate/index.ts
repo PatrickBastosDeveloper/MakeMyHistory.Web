@@ -35,14 +35,6 @@ export function validateAge(value: string): string | null {
   return null;
 }
 
-/** Converts dd/mm/aaaa → aaaa-mm-dd (ISO format for the API) */
-export function parseFullDateToInput(ddMmYyyy: string): string | null {
-  const parts = ddMmYyyy.split('/');
-  if (parts.length !== 3) return null;
-  const [day, month, yearStr] = parts;
-  return `${yearStr}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-}
-
 /** Converts aaaa-mm-dd (API format) → dd/mm/aaaa for display in inputs */
 export function formatStoredDateToInput(eventDate?: string): string {
   if (!eventDate) return '';

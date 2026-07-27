@@ -47,12 +47,10 @@ export function useMemoriesTimeline(userId: string) {
 
       const totalCount = (response as any).totalCount as number | undefined;
       const limit = (response as any).limit as number | undefined;
-      const hasMemories = Array.isArray(anyResponse.memories);
-      const hasMemoriesCapital = Array.isArray(anyResponse.Memories);
 
       // eslint-disable-next-line no-console
       console.log(
-        `[timeline] userId=${userId} limit=${limit ?? 'null'} totalCount=${totalCount ?? 'null'} memoriesLen=${memories.length} hasMemories=${hasMemories} hasMemoriesCapital=${hasMemoriesCapital}`,
+        `[timeline] userId=${userId} limit=${limit ?? 'null'} totalCount=${totalCount ?? 'null'} memoriesLen=${memories.length}`,
       );
 
       return {
