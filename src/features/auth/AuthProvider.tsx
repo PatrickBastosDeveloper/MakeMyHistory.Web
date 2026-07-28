@@ -1,12 +1,17 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { initUser } from '../../services/initService';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { initUser, recoverUser } from '../../services/initService';
 
 const USER_ID_STORAGE_KEY = 'userId';
 const RECOVERY_CODE_STORAGE_KEY = 'recoveryCode';
+const HAS_SEEN_RECOVERY_KEY = 'hasSeenRecoveryCode';
 
 type AuthContextValue = {
   userId: string;
   isReady: boolean;
+  recoveryCode: string | null;
+  showRecoveryBanner: boolean;
+  dismissRecoveryBanner: () => void;
+  recoverAccount: (code: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -16,19 +21,6 @@ function getStoredUserId() {
   return window.localStorage.getItem(USER_ID_STORAGE_KEY);
 }
 
-function getUserIdFromUrl() {
-  try {
-    const params = new URLSearchParams(window.location.search);
-    const userIdFromUrl = params.get('userId');
-    if (!userIdFromUrl) return null;
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userIdFromUrl)
-      ? userIdFromUrl
-      : null;
-  } catch {
-    return null;
-  }
-}
-
 type AuthProviderProps = {
   children: ReactNode;
 };
@@ -36,29 +28,30 @@ type AuthProviderProps = {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [userId, setUserId] = useState('');
   const [isReady, setIsReady] = useState(false);
+  const [recoveryCode, setRecoveryCode] = useState<string | null>(null);
+  const [showRecoveryBanner, setShowRecoveryBanner] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
     async function init() {
-      const userIdFromUrl = getUserIdFromUrl();
-      if (userIdFromUrl) {
-        window.localStorage.setItem(USER_ID_STORAGE_KEY, userIdFromUrl);
-        if (!cancelled) {
-          setUserId(userIdFromUrl);
-          setIsReady(true);
-        }
-        return;
-      }
-
       const storedUserId = getStoredUserId();
+
       try {
         const response = await initUser(storedUserId ?? undefined);
         window.localStorage.setItem(USER_ID_STORAGE_KEY, response.userId);
         window.localStorage.setItem(RECOVERY_CODE_STORAGE_KEY, response.recoveryCode);
+
         if (!cancelled) {
           setUserId(response.userId);
+          setRecoveryCode(response.recoveryCode);
           setIsReady(true);
+
+          // Show recovery banner on first visit (no stored userId = new user)
+          const hasSeen = window.localStorage.getItem(HAS_SEEN_RECOVERY_KEY);
+          if (!storedUserId && !hasSeen) {
+            setShowRecoveryBanner(true);
+          }
         }
       } catch {
         // Fallback: se não conseguir contatar o backend, usa ID local
@@ -68,6 +61,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
         if (!cancelled) {
           setUserId(fallbackId);
+          setRecoveryCode(null);
           setIsReady(true);
         }
       }
@@ -86,7 +80,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
-  const value = useMemo(() => ({ userId, isReady }), [isReady, userId]);
+  const dismissRecoveryBanner = useCallback(() => {
+    setShowRecoveryBanner(false);
+    window.localStorage.setItem(HAS_SEEN_RECOVERY_KEY, 'true');
+  }, []);
+
+  const recoverAccount = useCallback(async (code: string) => {
+    const response = await recoverUser(code);
+    window.localStorage.setItem(USER_ID_STORAGE_KEY, response.userId);
+    setUserId(response.userId);
+  }, []);
+
+  const value = useMemo(
+    () => ({ userId, isReady, recoveryCode, showRecoveryBanner, dismissRecoveryBanner, recoverAccount }),
+    [isReady, userId, recoveryCode, showRecoveryBanner, dismissRecoveryBanner, recoverAccount],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
