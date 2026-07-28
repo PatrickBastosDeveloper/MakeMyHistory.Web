@@ -16,6 +16,8 @@ import { useMemoriesTimeline } from '../../hooks/useMemoriesTimeline';
 import { useUpdateMemory } from '../../hooks/useUpdateMemory';
 import { useUserProfile, useSaveUserProfile } from '../../hooks/useUserProfile';
 import { useAuth } from '../auth/AuthProvider';
+import { RecoveryCodeBanner } from '../auth/RecoveryCodeBanner';
+import { RecoverModal } from '../auth/RecoverModal';
 import { CreateMemoryForm } from '../memories/CreateMemoryForm';
 import { Timeline } from '../memories/Timeline';
 import { StorySection } from '../stories/StorySection';
@@ -187,6 +189,9 @@ export function HomePage() {
     setDeletingMemory(null);
   }, []);
 
+  const { recoveryCode, showRecoveryBanner, dismissRecoveryBanner, recoverAccount } = useAuth();
+  const [isRecoverModalOpen, setIsRecoverModalOpen] = useState(false);
+
   const handleOpenProfile = useCallback(() => {
     setIsProfileModalOpen(true);
   }, []);
@@ -194,6 +199,13 @@ export function HomePage() {
   const handleCloseProfile = useCallback(() => {
     setIsProfileModalOpen(false);
   }, []);
+
+  const handleRecovered = useCallback(
+    async () => {
+      showToast({ message: 'Conta recuperada com sucesso!', variant: 'success' });
+    },
+    [showToast],
+  );
 
   const handleSaveProfile = useCallback(
     (data: { name: string; birthDate: string }) => {
@@ -328,6 +340,29 @@ export function HomePage() {
         onClose={handleCloseEdit}
         onSave={handleSaveEdit}
       />
+      {showRecoveryBanner && recoveryCode ? (
+        <RecoveryCodeBanner
+          recoveryCode={recoveryCode}
+          onDismiss={dismissRecoveryBanner}
+        />
+      ) : null}
+
+      <div className="section-actions" style={{ justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => setIsRecoverModalOpen(true)}
+        >
+          Recuperar conta
+        </Button>
+      </div>
+
+      <RecoverModal
+        isOpen={isRecoverModalOpen}
+        onClose={() => setIsRecoverModalOpen(false)}
+        onRecovered={handleRecovered}
+      />
+
       <ShareMenu
         isOpen={isShareMenuOpen}
         title={storyState.storyTitle ?? ''}
