@@ -16,7 +16,7 @@ import { useMemoriesTimeline } from '../../hooks/useMemoriesTimeline';
 import { useUpdateMemory } from '../../hooks/useUpdateMemory';
 import { useUserProfile, useSaveUserProfile } from '../../hooks/useUserProfile';
 import { useAuth } from '../auth/AuthProvider';
-import { RecoveryCodeBanner } from '../auth/RecoveryCodeBanner';
+import { OnboardingModal } from '../auth/OnboardingModal';
 import { RecoverModal } from '../auth/RecoverModal';
 import { CreateMemoryForm } from '../memories/CreateMemoryForm';
 import { Timeline } from '../memories/Timeline';
@@ -200,9 +200,14 @@ export function HomePage() {
     setIsProfileModalOpen(false);
   }, []);
 
+  const handleOpenRecover = useCallback(() => {
+    setIsProfileModalOpen(false);
+    // Small delay to let profile modal close before opening recover modal
+    setTimeout(() => setIsRecoverModalOpen(true), 200);
+  }, []);
+
   const handleRecovered = useCallback(
     (newUserId: string) => {
-      // Save the recovered userId and reload the page so AuthProvider re-initializes
       window.localStorage.setItem('userId', newUserId);
       window.location.reload();
     },
@@ -277,7 +282,7 @@ export function HomePage() {
                   variant="secondary"
                   onClick={handleOpenProfile}
                 >
-                  {profileQuery.data?.name ?? 'Editar perfil'}
+                  {profileQuery.data?.name ?? 'Perfil'}
                 </Button>
                 <Button
                   type="button"
@@ -343,21 +348,11 @@ export function HomePage() {
         onSave={handleSaveEdit}
       />
       {showRecoveryBanner && recoveryCode ? (
-        <RecoveryCodeBanner
+        <OnboardingModal
           recoveryCode={recoveryCode}
           onDismiss={dismissRecoveryBanner}
         />
       ) : null}
-
-      <div className="section-actions" style={{ justifyContent: 'flex-end', marginTop: '0.5rem' }}>
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => setIsRecoverModalOpen(true)}
-        >
-          Recuperar conta
-        </Button>
-      </div>
 
       <RecoverModal
         isOpen={isRecoverModalOpen}
@@ -377,6 +372,8 @@ export function HomePage() {
         isSaving={saveProfileMutation.isPending}
         onClose={handleCloseProfile}
         onSave={handleSaveProfile}
+        recoveryCode={recoveryCode}
+        onRecoverAccount={handleOpenRecover}
       />
       <ConfirmDialog
         isOpen={isDeleteConfirmOpen}

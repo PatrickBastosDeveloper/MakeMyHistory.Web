@@ -888,6 +888,77 @@ h1 {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ───── Profile / Security ───── */
+.profile-divider {
+  border: none;
+  border-top: 1px solid rgba(125, 211, 252, 0.12);
+  margin: 0.5rem 0;
+}
+
+.security-section {
+  display: grid;
+  gap: 12px;
+}
+
+.security-section__title {
+  margin: 0;
+  font-size: 1rem;
+  color: #e5eef8;
+  font-weight: 700;
+}
+
+.security-section__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.security-section__no-code {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.88rem;
+}
+
+.security-section__recover {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  color: #d9f0ff;
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  font-family: inherit;
+  justify-self: start;
+}
+
+.security-section__recover:hover {
+  background: rgba(125, 211, 252, 0.1);
+}
+
+/* ───── Recovery Code ───── */
+.recovery-code-display {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(2, 6, 23, 0.6);
+  border: 1px solid rgba(125, 211, 252, 0.2);
+}
+
+.recovery-code-display__code {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #7dd3fc;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  user-select: all;
+}
+
 .story-card {
   border-radius: 22px;
   border: 1px solid rgba(125, 211, 252, 0.16);
