@@ -35,11 +35,11 @@ export function OnboardingModal({ recoveryCode, onDismiss }: OnboardingModalProp
             <code className="recovery-code-display__code">{recoveryCode}</code>
           </div>
 
-          <p className="modal__message" style={{ marginTop: '0.75rem', fontSize: '0.875rem', opacity: 0.7 }}>
-            {copied
-              ? '✅ Código copiado'
-              : 'Você poderá recuperá-lo depois em: Perfil → Código de recuperação'}
-          </p>
+          {copied ? (
+            <p className="modal__message" style={{ marginTop: '0.75rem', fontSize: '0.875rem', opacity: 0.7 }}>
+              Você poderá recuperá-lo depois em: Perfil → Código de recuperação
+            </p>
+          ) : null}
         </div>
 
         <div className="modal__footer">
