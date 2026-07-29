@@ -201,10 +201,12 @@ export function HomePage() {
   }, []);
 
   const handleRecovered = useCallback(
-    async () => {
-      showToast({ message: 'Conta recuperada com sucesso!', variant: 'success' });
+    (newUserId: string) => {
+      // Save the recovered userId and reload the page so AuthProvider re-initializes
+      window.localStorage.setItem('userId', newUserId);
+      window.location.reload();
     },
-    [showToast],
+    [],
   );
 
   const handleSaveProfile = useCallback(
