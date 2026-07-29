@@ -282,7 +282,7 @@ export function HomePage() {
                   variant="secondary"
                   onClick={handleOpenProfile}
                 >
-                  {profileQuery.data?.name ?? 'Editar perfil'}
+                  {profileQuery.data?.name ?? 'Perfil'}
                 </Button>
                 <Button
                   type="button"
