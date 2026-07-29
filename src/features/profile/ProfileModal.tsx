@@ -146,13 +146,13 @@ export function ProfileModal({ isOpen, onClose, onSave, profile, isSaving, recov
               </p>
             )}
 
-            <button
+            <Button
               type="button"
-              className="security-section__recover"
+              variant="ghost"
               onClick={onRecoverAccount}
             >
               ↺ Recuperar conta
-            </button>
+            </Button>
           </div>
         </div>
         <div className="modal__footer">

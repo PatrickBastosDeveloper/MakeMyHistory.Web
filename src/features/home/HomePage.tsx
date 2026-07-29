@@ -200,6 +200,12 @@ export function HomePage() {
     setIsProfileModalOpen(false);
   }, []);
 
+  const handleOpenRecover = useCallback(() => {
+    setIsProfileModalOpen(false);
+    // Small delay to let profile modal close before opening recover modal
+    setTimeout(() => setIsRecoverModalOpen(true), 200);
+  }, []);
+
   const handleRecovered = useCallback(
     (newUserId: string) => {
       window.localStorage.setItem('userId', newUserId);
@@ -367,7 +373,7 @@ export function HomePage() {
         onClose={handleCloseProfile}
         onSave={handleSaveProfile}
         recoveryCode={recoveryCode}
-        onRecoverAccount={() => setIsRecoverModalOpen(true)}
+        onRecoverAccount={handleOpenRecover}
       />
       <ConfirmDialog
         isOpen={isDeleteConfirmOpen}
