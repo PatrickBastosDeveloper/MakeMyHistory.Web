@@ -16,7 +16,7 @@ import { useMemoriesTimeline } from '../../hooks/useMemoriesTimeline';
 import { useUpdateMemory } from '../../hooks/useUpdateMemory';
 import { useUserProfile, useSaveUserProfile } from '../../hooks/useUserProfile';
 import { useAuth } from '../auth/AuthProvider';
-import { RecoveryCodeBanner } from '../auth/RecoveryCodeBanner';
+import { OnboardingModal } from '../auth/OnboardingModal';
 import { RecoverModal } from '../auth/RecoverModal';
 import { CreateMemoryForm } from '../memories/CreateMemoryForm';
 import { Timeline } from '../memories/Timeline';
@@ -343,7 +343,7 @@ export function HomePage() {
         onSave={handleSaveEdit}
       />
       {showRecoveryBanner && recoveryCode ? (
-        <RecoveryCodeBanner
+        <OnboardingModal
           recoveryCode={recoveryCode}
           onDismiss={dismissRecoveryBanner}
         />
