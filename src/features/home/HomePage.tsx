@@ -202,7 +202,6 @@ export function HomePage() {
 
   const handleRecovered = useCallback(
     (newUserId: string) => {
-      // Save the recovered userId and reload the page so AuthProvider re-initializes
       window.localStorage.setItem('userId', newUserId);
       window.location.reload();
     },
@@ -349,16 +348,6 @@ export function HomePage() {
         />
       ) : null}
 
-      <div className="section-actions" style={{ justifyContent: 'flex-end', marginTop: '0.5rem' }}>
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => setIsRecoverModalOpen(true)}
-        >
-          Recuperar conta
-        </Button>
-      </div>
-
       <RecoverModal
         isOpen={isRecoverModalOpen}
         onClose={() => setIsRecoverModalOpen(false)}
@@ -377,6 +366,8 @@ export function HomePage() {
         isSaving={saveProfileMutation.isPending}
         onClose={handleCloseProfile}
         onSave={handleSaveProfile}
+        recoveryCode={recoveryCode}
+        onRecoverAccount={() => setIsRecoverModalOpen(true)}
       />
       <ConfirmDialog
         isOpen={isDeleteConfirmOpen}

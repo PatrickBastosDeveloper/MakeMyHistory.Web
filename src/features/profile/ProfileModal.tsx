@@ -7,6 +7,8 @@ type ProfileModalProps = {
   onSave: (data: { name: string; birthDate: string }) => void;
   profile: { name?: string | null; birthDate?: string | null } | null | undefined;
   isSaving: boolean;
+  recoveryCode: string | null;
+  onRecoverAccount: () => void;
 };
 
 type ValidationErrors = {
@@ -14,16 +16,20 @@ type ValidationErrors = {
   birthDate?: string;
 };
 
-export function ProfileModal({ isOpen, onClose, onSave, profile, isSaving }: ProfileModalProps) {
+export function ProfileModal({ isOpen, onClose, onSave, profile, isSaving, recoveryCode, onRecoverAccount }: ProfileModalProps) {
   const [name, setName] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [errors, setErrors] = useState<ValidationErrors>({});
+  const [showCode, setShowCode] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setName(profile?.name ?? '');
       setBirthDate(profile?.birthDate ?? '');
       setErrors({});
+      setShowCode(false);
+      setCopied(false);
     }
   }, [isOpen, profile]);
 
@@ -54,18 +60,27 @@ export function ProfileModal({ isOpen, onClose, onSave, profile, isSaving }: Pro
     onSave({ name: name.trim(), birthDate: apiDate });
   }, [name, birthDate, validate, onSave]);
 
+  const handleCopyCode = () => {
+    if (!recoveryCode) return;
+    navigator.clipboard.writeText(recoveryCode).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {});
+  };
+
   if (!isOpen) return null;
 
   const canSave = name.trim().length > 0 && birthDate.length > 0 && !isSaving;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal modal--sm" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Seu Perfil">
+      <div className="modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Seu Perfil">
         <div className="modal__header">
           <h2 className="modal__title">Seu Perfil</h2>
           <button type="button" className="modal__close" onClick={onClose} aria-label="Fechar">✕</button>
         </div>
         <div className="modal__body">
+          {/* ── Perfil ── */}
           <div className="input-field">
             <label className="input-field__label" htmlFor="profile-name">Nome</label>
             <input
@@ -91,6 +106,53 @@ export function ProfileModal({ isOpen, onClose, onSave, profile, isSaving }: Pro
               max={new Date().toISOString().split('T')[0]}
             />
             {errors.birthDate ? <span className="date-value-error">{errors.birthDate}</span> : null}
+          </div>
+
+          <hr className="profile-divider" />
+
+          {/* ── Segurança ── */}
+          <div className="security-section">
+            <h3 className="security-section__title">🔑 Código de recuperação</h3>
+
+            {recoveryCode ? (
+              <>
+                {showCode ? (
+                  <div className="recovery-code-display" style={{ marginBottom: '0.75rem' }}>
+                    <code className="recovery-code-display__code">{recoveryCode}</code>
+                  </div>
+                ) : null}
+
+                <div className="security-section__actions">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setShowCode((prev) => !prev)}
+                  >
+                    {showCode ? 'Ocultar código' : 'Mostrar código'}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={handleCopyCode}
+                    disabled={!showCode}
+                  >
+                    {copied ? 'Copiado ✓' : 'Copiar código'}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <p className="security-section__no-code">
+                Código indisponível no momento.
+              </p>
+            )}
+
+            <button
+              type="button"
+              className="security-section__recover"
+              onClick={onRecoverAccount}
+            >
+              ↺ Recuperar conta
+            </button>
           </div>
         </div>
         <div className="modal__footer">
