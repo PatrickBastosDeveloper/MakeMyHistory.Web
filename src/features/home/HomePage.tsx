@@ -189,7 +189,7 @@ export function HomePage() {
     setDeletingMemory(null);
   }, []);
 
-  const { recoveryCode, showRecoveryBanner, dismissRecoveryBanner, recoverAccount } = useAuth();
+  const { recoveryCode, showRecoveryBanner, dismissRecoveryBanner } = useAuth();
   const [isRecoverModalOpen, setIsRecoverModalOpen] = useState(false);
 
   const handleOpenProfile = useCallback(() => {
