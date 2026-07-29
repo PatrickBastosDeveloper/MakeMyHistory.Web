@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button } from '../../components/Button';
 import { recoverUser } from '../../services/initService';
 
 type RecoverModalProps = {
@@ -85,22 +86,12 @@ export function RecoverModal({ isOpen, onClose, onRecovered }: RecoverModalProps
         </div>
 
         <div className="modal__footer">
-          <button
-            type="button"
-            className="btn btn--secondary"
-            onClick={onClose}
-            disabled={isLoading}
-          >
+          <Button type="button" variant="ghost" onClick={onClose} disabled={isLoading}>
             Cancelar
-          </button>
-          <button
-            type="button"
-            className="btn btn--primary"
-            onClick={handleSubmit}
-            disabled={isLoading || !code.trim()}
-          >
+          </Button>
+          <Button type="button" onClick={handleSubmit} disabled={isLoading || !code.trim()}>
             {isLoading ? 'Recuperando...' : 'Recuperar'}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
