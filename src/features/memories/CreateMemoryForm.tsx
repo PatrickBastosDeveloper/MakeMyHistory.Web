@@ -88,7 +88,7 @@ export function CreateMemoryForm({ userId, isPending, onSave }: CreateMemoryForm
 
   return (
     <section className="panel-card">
-      <Header title="Nova memória" subtitle="Fluxo principal" />
+      <Header title="Nova memória" />
       <div className="memory-form">
         <label className="input-field" htmlFor="memory-title">
           <span className="input-field__label">Título opcional</span>
