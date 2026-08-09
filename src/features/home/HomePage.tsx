@@ -273,7 +273,7 @@ export function HomePage() {
         <Card className="hero-card">
           <Header
             title="Bem-vindo ao MakeMyHistory"
-            subtitle="Registre memórias, acompanhe sua timeline e acompanhe sua história pessoal."
+            subtitle="Guarde memórias, reviva momentos e construa sua história ao longo do tempo."
             action={
               <div className="section-actions">
                 <Badge variant="default">MVP</Badge>
