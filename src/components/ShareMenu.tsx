@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
+import { track } from '../lib/track/track';
 
 type ShareMenuProps = {
   isOpen: boolean;
@@ -73,6 +74,7 @@ export function ShareMenu({ isOpen, title, text, onClose }: ShareMenuProps) {
     if (typeof navigator.share === 'function') {
       try {
         await navigator.share({ title, text });
+        track('story_shared', { channel: 'native' });
         onClose();
         return;
       } catch {
@@ -82,6 +84,7 @@ export function ShareMenu({ isOpen, title, text, onClose }: ShareMenuProps) {
     // fallback: copiar para área de transferência
     try {
       await navigator.clipboard.writeText(text);
+      track('story_shared', { channel: 'native' });
       onClose();
     } catch {
       // ignorar
@@ -114,7 +117,10 @@ export function ShareMenu({ isOpen, title, text, onClose }: ShareMenuProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="share-menu__option"
-                onClick={onClose}
+                onClick={() => {
+                  track('story_shared', { channel: option.id });
+                  onClose();
+                }}
               >
                 <span className="share-menu__option-icon">{option.icon}</span>
                 <span className="share-menu__option-label">{option.label}</span>
