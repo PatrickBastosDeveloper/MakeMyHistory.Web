@@ -116,6 +116,7 @@ export function useStoryGeneration(userId: string, allMemories: MemoryUI[]) {
     if (!story) return;
     const text = story.title ? `${story.title}\n\n${story.content}` : story.content;
     navigator.clipboard.writeText(text).then(() => {
+      track('story_copied');
       showToast({ message: 'História copiada com sucesso.', variant: 'success' });
     }).catch(() => {
       showToast({ message: 'Não foi possível copiar a história.', variant: 'error' });

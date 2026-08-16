@@ -115,7 +115,6 @@ export function HomePage() {
       }
       createMemoryMutation.mutate(payload, {
         onSuccess: () => {
-          track('memory_created');
           showToast({ message: `Memória guardada em ${formatMemoryDate(new Date())}.`, variant: 'success' });
           setFormKey((k) => k + 1);
         },
