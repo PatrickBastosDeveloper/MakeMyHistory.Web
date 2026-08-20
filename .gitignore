@@ -37,3 +37,6 @@ dev-context.md
 # Analytics documentation (local only, not versioned)
 docs/ANALYTICS_ROADMAP.md
 docs/ANALYTICS_STATUS.md
+
+#Documentation
+docs/METABASE_GUIDE.md
