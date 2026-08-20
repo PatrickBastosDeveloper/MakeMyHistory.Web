@@ -17,6 +17,11 @@
   box-sizing: border-box;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 html,
 body,
 #app {
@@ -26,6 +31,8 @@ body,
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
 }
 
 button,
@@ -48,19 +55,25 @@ a {
 
 .page-shell {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   justify-content: center;
+  align-items: center;
   padding: 24px;
+  padding-left: max(24px, env(safe-area-inset-left));
+  padding-right: max(24px, env(safe-area-inset-right));
 }
 
 .hero-card {
   width: 100%;
   max-width: 1160px;
+  margin: 0 auto;
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 28px;
   background: rgba(15, 23, 42, 0.82);
   box-shadow: 0 24px 80px rgba(2, 6, 23, 0.45);
   padding: 32px;
+  -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
 }
 
@@ -98,8 +111,12 @@ h1 {
 
 .home-layout__row--top {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
+}
+
+.home-layout__row--top > * {
+  min-width: 0;
 }
 
 .home-layout__row--bottom {
@@ -495,7 +512,7 @@ h1 {
 
 .date-type-options {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
 }
 
@@ -504,7 +521,8 @@ h1 {
   align-items: center;
   justify-content: center;
   min-height: 40px;
-  padding: 0 12px;
+  min-width: 0;
+  padding: 0 10px;
   border-radius: 999px;
   border: 1px solid rgba(125, 211, 252, 0.18);
   background: rgba(2, 6, 23, 0.55);
@@ -515,6 +533,9 @@ h1 {
   transition: all 0.15s ease;
   text-align: center;
   user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .date-type-option:hover {
@@ -684,6 +705,20 @@ h1 {
   .home-layout__row--top {
     grid-template-columns: 1fr;
   }
+
+  /* When the form is in a single column there's not enough width for 3 pills side-by-side.
+     Stack them so labels never get truncated (iOS/Safari quirk: pills used to overflow). */
+  .date-type-options {
+    grid-template-columns: 1fr;
+  }
+
+  .date-type-option {
+    justify-content: flex-start;
+    padding: 0 16px;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
 }
 
 /* ───── Kebab Menu ───── */
@@ -766,6 +801,7 @@ h1 {
   position: fixed;
   inset: 0;
   background: rgba(2, 6, 23, 0.72);
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -1111,6 +1147,8 @@ h1 {
 @media (max-width: 640px) {
   .page-shell {
     padding: 16px;
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
     align-items: flex-start;
   }
 
