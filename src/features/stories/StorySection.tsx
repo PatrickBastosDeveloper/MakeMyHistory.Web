@@ -169,20 +169,12 @@ export function StorySection({
             ) : null}
             <hr className="story-card__divider" />
             <div className="story-actions">
-              {previewVisible ? (
-                <Button type="button" variant="secondary" onClick={onCopy}>
-                  Copiar História
-                </Button>
-              ) : (
-                <>
-                  <Button type="button" variant="secondary" onClick={onCopy}>
-                    Copiar História
-                  </Button>
-                  <Button type="button" variant="secondary" onClick={onShare}>
-                    Compartilhar
-                  </Button>
-                </>
-              )}
+              <Button type="button" variant="secondary" onClick={onCopy}>
+                Copiar História
+              </Button>
+              <Button type="button" variant="secondary" onClick={onShare}>
+                Compartilhar
+              </Button>
               {isOutOfSync && successMemories.length >= MIN_MEMORIES_FOR_STORY ? (
                 <Button
                   type="button"
