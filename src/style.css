@@ -1255,16 +1255,25 @@ h1 {
 }
 
 @media (max-width: 640px) {
+  /* Mobile-first reading: minimize horizontal chrome so content spans ~92-96% of the screen.
+     Cascade before this fix: page-shell(16) + hero-card(24) + panel-card(22) + story-card(16)
+     = 78px per side (~60% usable width on a 390px screen).
+     Now: page-shell(4) + hero-card(6) + panel-card(8) = 18px per side (~92%). */
   .page-shell {
-    padding: 16px;
-    padding-left: max(16px, env(safe-area-inset-left));
-    padding-right: max(16px, env(safe-area-inset-right));
+    padding: 4px;
+    padding-left: max(4px, env(safe-area-inset-left));
+    padding-right: max(4px, env(safe-area-inset-right));
     align-items: flex-start;
   }
 
   .hero-card {
-    padding: 24px;
-    border-radius: 22px;
+    padding: 6px;
+    border-radius: 16px;
+  }
+
+  .panel-card {
+    padding: 8px;
+    border-radius: 16px;
   }
 
   h1 {
@@ -1281,8 +1290,12 @@ h1 {
 
   .story-card,
   .story-card--compact {
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
     padding: 1rem;
-    border-radius: 18px;
+    border-radius: 16px;
   }
 
   .story-card__title {
