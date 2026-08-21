@@ -21,6 +21,7 @@ import { RecoverModal } from '../auth/RecoverModal';
 import { CreateMemoryForm } from '../memories/CreateMemoryForm';
 import { Timeline } from '../memories/Timeline';
 import { StorySection } from '../stories/StorySection';
+import { StoryReaderModal } from '../stories/StoryReaderModal';
 import { EditMemoryModal } from '../memories/EditMemoryModal';
 import { ProfileModal } from '../profile/ProfileModal';
 import { useStoryGeneration } from '../stories/useStoryGeneration';
@@ -63,6 +64,7 @@ export function HomePage() {
   } = useStoryGeneration(userId, allMemories);
 
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
+  const [isStoryReaderOpen, setIsStoryReaderOpen] = useState(false);
 
   useEffect(() => {
     if (hasTrackedAppOpen.current) return;
@@ -318,6 +320,7 @@ export function HomePage() {
                 onCopy={handleCopyStory}
                 onShare={() => setIsShareMenuOpen(true)}
                 onGenerate={handleGenerateStory}
+                onReadFullStory={() => setIsStoryReaderOpen(true)}
               />
             </div>
 
@@ -364,6 +367,19 @@ export function HomePage() {
         title={storyState.storyTitle ?? ''}
         text={storyText}
         onClose={() => setIsShareMenuOpen(false)}
+      />
+      <StoryReaderModal
+        isOpen={isStoryReaderOpen}
+        title={storyState.storyTitle}
+        storyUpdatedAt={storyState.storyUpdatedAt}
+        storyContent={storyState.storyContent}
+        storyMemoryCount={storyState.storyMemoryCount}
+        onCopy={handleCopyStory}
+        onShare={() => {
+          setIsStoryReaderOpen(false);
+          setIsShareMenuOpen(true);
+        }}
+        onClose={() => setIsStoryReaderOpen(false)}
       />
       <ProfileModal
         isOpen={isProfileModalOpen}

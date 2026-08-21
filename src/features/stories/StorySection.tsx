@@ -19,7 +19,26 @@ type StorySectionProps = {
   onCopy: () => void;
   onShare: () => void;
   onGenerate: () => void;
+  onReadFullStory: () => void;
 };
+
+const PREVIEW_CHAR_LIMIT = 320;
+
+function isStoryLong(content: string | undefined): boolean {
+  return Boolean(content && content.trim().length > PREVIEW_CHAR_LIMIT);
+}
+
+function getStoryPreview(content: string | undefined): string {
+  if (!content) return '';
+
+  const paragraphs = content.split(/\n\n+/).filter(Boolean).map((paragraph) => paragraph.trim());
+  if (paragraphs.length === 0) return '';
+
+  const firstParagraph = paragraphs[0];
+  if (firstParagraph.length <= PREVIEW_CHAR_LIMIT) return firstParagraph;
+
+  return `${firstParagraph.slice(0, PREVIEW_CHAR_LIMIT).trimEnd()}…`;
+}
 
 function formatRelativeTime(isoDate: string): string {
   const now = Date.now();
@@ -50,7 +69,12 @@ export function StorySection({
   onCopy,
   onShare,
   onGenerate,
+  onReadFullStory,
 }: StorySectionProps) {
+  const hasLongStory = isStoryLong(storyContent);
+  const storyPreview = getStoryPreview(storyContent);
+  const fullStoryVisible = storyContent !== undefined && !hasLongStory;
+  const previewVisible = hasLongStory;
   const showPlaceholder = !hasStory && successMemories.length < MIN_MEMORIES_FOR_STORY;
 
   return (
@@ -125,23 +149,40 @@ export function StorySection({
             </p>
           </div>
         ) : hasStory && !isInsufficient ? (
-          <article className="story-card">
+          <article className="story-card story-card--compact">
             {storyTitle ? (
               <h2 className="story-card__title">{storyTitle}</h2>
             ) : null}
             <div className="story-card__content">
-              {storyContent?.split(/\n\n+/).filter(Boolean).map((paragraph: string, idx: number) => (
-                <p key={idx}>{paragraph.trim()}</p>
-              ))}
+              {previewVisible ? (
+                <p>{storyPreview}</p>
+              ) : fullStoryVisible ? (
+                storyContent?.split(/\n\n+/).filter(Boolean).map((paragraph: string, idx: number) => (
+                  <p key={idx}>{paragraph.trim()}</p>
+                ))
+              ) : null}
             </div>
+            {previewVisible ? (
+              <button type="button" className="story-read-link" onClick={onReadFullStory}>
+                Ler história completa →
+              </button>
+            ) : null}
             <hr className="story-card__divider" />
             <div className="story-actions">
-              <Button type="button" variant="secondary" onClick={onCopy}>
-                Copiar História
-              </Button>
-              <Button type="button" variant="secondary" onClick={onShare}>
-                Compartilhar
-              </Button>
+              {previewVisible ? (
+                <Button type="button" variant="secondary" onClick={onCopy}>
+                  Copiar História
+                </Button>
+              ) : (
+                <>
+                  <Button type="button" variant="secondary" onClick={onCopy}>
+                    Copiar História
+                  </Button>
+                  <Button type="button" variant="secondary" onClick={onShare}>
+                    Compartilhar
+                  </Button>
+                </>
+              )}
               {isOutOfSync && successMemories.length >= MIN_MEMORIES_FOR_STORY ? (
                 <Button
                   type="button"
