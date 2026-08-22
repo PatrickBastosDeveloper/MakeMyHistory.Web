@@ -314,6 +314,34 @@ h1 {
   color: #cbd5e1;
 }
 
+/* Inline expansion: 3-line clamp with "Ver mais/Ver menos" toggle */
+.timeline-item__content--clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.timeline-item__more-link {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 6px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #7dd3fc;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.timeline-item__more-link:hover {
+  text-decoration: underline;
+}
+
 .timeline-status {
   display: inline-flex;
   margin-top: 10px;
