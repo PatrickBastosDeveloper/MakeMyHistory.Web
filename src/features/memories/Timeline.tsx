@@ -24,11 +24,37 @@ type TimelineProps = {
 const INITIAL_VISIBLE_MEMORIES = 10;
 const INCREMENT_MEMORIES = 10;
 
+/** Approximate character threshold for 3 lines at typical card widths (~92% of a 390px screen). */
+const CLAMP_CHAR_THRESHOLD = 160;
+
 function getDisplayTitle(memory: MemoryUI): string {
   if (memory.title && memory.title.trim() && memory.title !== 'Sem título') {
     return memory.title;
   }
   return deriveTitle(memory.content);
+}
+
+function MemoryContent({ content }: { content: string }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const isClamped = content.length > CLAMP_CHAR_THRESHOLD;
+
+  if (!isClamped) {
+    return <p>{content}</p>;
+  }
+
+  return (
+    <>
+      <p className={isExpanded ? undefined : 'timeline-item__content--clamped'}>{content}</p>
+      <button
+        type="button"
+        className="timeline-item__more-link"
+        onClick={() => setIsExpanded((prev) => !prev)}
+        aria-expanded={isExpanded}
+      >
+        {isExpanded ? 'Ver menos' : 'Ver mais'}
+      </button>
+    </>
+  );
 }
 
 export function Timeline({
@@ -95,7 +121,7 @@ export function Timeline({
                     ) : null}
                   </div>
                 </div>
-                {memory.isValidationError ? null : <p>{memory.content}</p>}
+                {memory.isValidationError ? null : <MemoryContent content={memory.content} />}
                 {memory.status === 'pending' ? <span className="timeline-status timeline-status--pending">Guardando...</span> : null}
                 {memory.status === 'error' && memory.isValidationError ? (
                   <div className="timeline-error timeline-error--validation">
