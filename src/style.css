@@ -312,6 +312,9 @@ h1 {
 .timeline-item p {
   margin: 0;
   color: #cbd5e1;
+  /* Long unbroken strings (e.g. "aaaaaa...") must wrap instead of stretching the page */
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* Inline expansion: 3-line clamp with "Ver mais/Ver menos" toggle */
