@@ -41,6 +41,7 @@ export function useMemoriesTimeline(userId: string) {
         dateType: (m.dateType as any) ?? undefined,
         age: m.age ?? undefined,
         isDateInferred: m.isDateInferred ?? undefined,
+        isImportant: m.isImportant ?? false,
         clientRequestId: m.clientRequestId ?? undefined,
         status: 'success',
       }));
