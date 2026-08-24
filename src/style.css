@@ -1367,4 +1367,12 @@ h1 {
     flex-direction: column;
     align-items: flex-start;
   }
+
+  /* Kebab dropdown must open to the RIGHT of the trigger on mobile.
+     The stacked header places the trigger near the left edge, so the
+     default right-aligned menu (right: 0) expands off-screen to the left. */
+  .kebab-menu__dropdown {
+    left: 0;
+    right: auto;
+  }
 }
