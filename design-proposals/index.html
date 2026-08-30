@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MakeMyHistory — Revisão da identidade visual (3 propostas)</title>
+<style>
+  :root {
+    --page-bg: #17202b;
+    --page-text: #e8eef5;
+    --page-muted: #93a3b3;
+    --page-card: #212c38;
+    --page-border: rgba(255, 255, 255, 0.08);
+    --page-accent: #d6b370;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; }
+
+  body {
+    background: var(--page-bg);
+    color: var(--page-text);
+    line-height: 1.6;
+    padding: 40px 24px 80px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .doc-header {
+    max-width: 1280px;
+    margin: 0 auto 36px;
+    text-align: center;
+  }
+  .doc-header h1 {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .doc-header p {
+    color: var(--page-muted);
+    max-width: 760px;
+    margin: 0 auto;
+    font-size: 0.98rem;
+  }
+  .doc-header .kicker {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--page-accent);
+    font-weight: 700;
+  }
+
+  .current-banner {
+    max-width: 1280px;
+    margin: 0 auto 28px;
+    background: var(--page-card);
+    border: 1px solid var(--page-border);
+    border-radius: 16px;
+    padding: 18px 22px;
+    font-size: 0.9rem;
+    color: var(--page-muted);
+  }
+  .current-banner strong { color: var(--page-text); }
+  .current-banner .swatch-row { display: flex; gap: 10px; margin-top: 10px; }
+  .current-banner .swatch {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    font-size: 0.68rem; color: var(--page-muted);
+  }
+  .current-banner .swatch span { width: 46px; height: 46px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); }
+
+  .proposals-grid {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .proposal {
+    background: var(--page-card);
+    border: 1px solid var(--page-border);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .proposal__head {
+    padding: 22px 22px 16px;
+    border-bottom: 1px solid var(--page-border);
+  }
+  .proposal__num {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-weight: 800;
+    margin-bottom: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .proposal__num-dot { width: 9px; height: 9px; border-radius: 50%; }
+  .proposal__title { font-size: 1.15rem; font-weight: 800; line-height: 1.3; margin-bottom: 4px; }
+  .proposal__tagline { font-size: 0.85rem; color: var(--page-muted); font-style: italic; }
+
+  .proposal__body { padding: 22px; display: flex; flex-direction: column; gap: 22px; flex: 1; }
+
+  .section-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--page-muted);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  /* Palette */
+  .palette { display: grid; gap: 8px; }
+  .palette__row { display: flex; align-items: center; gap: 10px; }
+  .palette__swatch { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.08); }
+  .palette__info { font-size: 0.78rem; display: grid; gap: 1px; }
+  .palette__hex { font-weight: 700; font-family: 'SF Mono', Menlo, Consolas, monospace; font-size: 0.74rem; }
+  .palette__role { color: var(--page-muted); }
+
+  /* Screen mockup scaffold (the actual product rendered per theme) */
+  .screen-frame {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+  }
+  .screen {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .screen .mini-hero {
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .screen .mini-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .screen .mini-header__left { display: flex; flex-direction: column; gap: 3px; }
+  .screen .mini-title { font-weight: 800; font-size: 0.95rem; letter-spacing: -0.01em; }
+  .screen .mini-subtitle { font-size: 0.72rem; color: #6B7280; }
+  .screen .mini-header__actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .screen .mini-badge {
+    font-size: 0.6rem; font-weight: 700; padding: 3px 8px; border-radius: 999px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .screen .mini-btn {
+    font-size: 0.66rem; font-weight: 600; padding: 6px 10px; border-radius: 999px;
+    border: 1px solid; cursor: default; white-space: nowrap;
+  }
+  .screen .mini-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .screen .mini-card {
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+  .screen .mini-card-head { display: flex; justify-content: space-between; align-items: flex-start; }
+  .screen .mini-card-title { font-weight: 700; font-size: 0.8rem; }
+  .screen .mini-label { font-size: 0.72rem; opacity: 0.85; }
+  .screen .mini-textarea {
+    border-radius: 8px;
+    min-height: 62px;
+    padding: 10px;
+    font-size: 0.72rem;
+    line-height: 1.5;
+    border: 1px solid;
+  }
+  .screen .mini-pills { display: flex; gap: 5px; flex-wrap: wrap; }
+  .screen .mini-pill {
+    font-size: 0.6rem; font-weight: 600; padding: 4px 9px; border-radius: 999px;
+    border: 1px solid;
+  }
+  .screen .mini-status {
+    border-radius: 10px;
+    padding: 12px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .screen .mini-status__title { font-size: 0.74rem; font-weight: 700; }
+  .screen .mini-status__desc { font-size: 0.66rem; line-height: 1.5; }
+  .screen .mini-timeline { display: flex; flex-direction: column; gap: 10px; }
+  .screen .mini-timeline-head { display: flex; justify-content: space-between; }
+  .screen .mini-tl-item {
+    border-radius: 10px;
+    padding: 10px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .screen .mini-tl-item__head { display: flex; justify-content: space-between; gap: 8px; }
+  .screen .mini-tl-item__title { font-weight: 700; font-size: 0.74rem; }
+  .screen .mini-tl-item__date { font-size: 0.64rem; }
+  .screen .mini-tl-item__body { font-size: 0.68rem; line-height: 1.55; }
+
+  /* UX justification */
+  .ux-note { font-size: 0.8rem; line-height: 1.6; color: inherit; }
+  .ux-note p { margin-bottom: 8px; }
+  .ux-note p:last-child { margin-bottom: 0; }
+
+  /* Pros / cons */
+  .pros-cons { display: grid; gap: 10px; }
+  .pros-cons__col { display: flex; flex-direction: column; gap: 6px; }
+  .pros-cons__head { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 800; }
+  .pros-cons__head--pros { color: #4caf7d; }
+  .pros-cons__head--cons { color: #e0796b; }
+  .pros-cons__list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .pros-cons__list li {
+    font-size: 0.76rem; line-height: 1.45; padding-left: 14px; position: relative;
+  }
+  .pros-cons__list li::before { position: absolute; left: 0; font-weight: 800; }
+  .pros-cons__list--pros li::before { content: '✓'; color: #4caf7d; }
+  .pros-cons__list--cons li::before { content: '✕'; color: #e0796b; }
+
+  .verdict {
+    margin-top: auto;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    border: 1px dashed;
+  }
+  .verdict strong { display: block; margin-bottom: 4px; font-size: 0.8rem; }
+
+  /* ───── THEME A: Livro de Memórias Moderno ───── */
+  .theme-a { background: #F8F6F1; color: #1F2937; }
+  .theme-a .screen .mini-hero { background: #FFFFFF; border: 1px solid #E5E7EB; }
+  .theme-a .screen .mini-title { color: #1F2937; }
+  .theme-a .screen .mini-badge { background: #F5EBD3; color: #8A6A2A; border: 1px solid #E3CFA0; }
+  .theme-a .screen .mini-btn { background: #5B7C99; color: #FFFFFF; border-color: #5B7C99; }
+  .theme-a .screen .mini-btn--sec { background: #FFFFFF; color: #1F2937; border-color: #D1D5DB; }
+  .theme-a .screen .mini-card { background: #FFFFFF; border: 1px solid #E5E7EB; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .theme-a .screen .mini-card-title { color: #1F2937; }
+  .theme-a .screen .mini-label { color: #6B7280; }
+  .theme-a .screen .mini-textarea { background: #FFFFFF; border-color: #D1D5DB; color: #1F2937; }
+  .theme-a .screen .mini-pill { background: #F3F4F6; color: #4B5563; border-color: #E5E7EB; }
+  .theme-a .screen .mini-status { background: #FFFFFF; border: 1px solid #E5E7EB; }
+  .theme-a .screen .mini-status__title { color: #1F2937; }
+  .theme-a .screen .mini-status__desc { color: #6B7280; }
+  .theme-a .screen .mini-tl-item { background: #FFFFFF; border: 1px solid #E5E7EB; }
+  .theme-a .screen .mini-tl-item__title { color: #1F2937; }
+  .theme-a .screen .mini-tl-item__date { color: #6B7280; }
+  .theme-a .screen .mini-tl-item__body { color: #4B5563; }
+  .theme-a .num-badge { color: #466782; }
+  .theme-a .palette__swatch { border-color: #E5E7EB; }
+  .theme-a .verdict { background: #F5F2EA; border-color: #D6B370; color: #4B4033; }
+
+  /* ───── THEME B: Elegante e Emocional ───── */
+  .theme-b .screen .mini-hero { background: #FFFDF9; border: 1px solid #E4D8C9; }
+  .theme-b { background: #F6F0E7; color: #3E3A36; }
+  .theme-b .screen .mini-title { color: #3E3A36; }
+  .theme-b .screen .mini-badge { background: #EDE0D1; color: #8A6238; border: 1px solid #D9BE9D; }
+  .theme-b .screen .mini-btn { background: #5C7280; color: #FFFDF9; border-color: #5C7280; }
+  .theme-b .screen .mini-btn--sec { background: #FFFDF9; color: #3E3A36; border-color: #D9C9B8; }
+  .theme-b .screen .mini-card { background: #FFFDF9; border: 1px solid #E4D8C9; box-shadow: 0 1px 3px rgba(80,60,40,0.05); }
+  .theme-b .screen .mini-card-title { color: #3E3A36; }
+  .theme-b .screen .mini-label { color: #8B7D6F; }
+  .theme-b .screen .mini-textarea { background: #FFFDF9; border-color: #D9C9B8; color: #3E3A36; }
+  .theme-b .screen .mini-pill { background: #F3EBE0; color: #5D5247; border-color: #E4D8C9; }
+  .theme-b .screen .mini-status { background: #FFFDF9; border: 1px solid #E4D8C9; }
+  .theme-b .screen .mini-status__title { color: #3E3A36; }
+  .theme-b .screen .mini-status__desc { color: #8B7D6F; }
+  .theme-b .screen .mini-tl-item { background: #FFFDF9; border: 1px solid #E4D8C9; }
+  .theme-b .screen .mini-tl-item__title { color: #3E3A36; }
+  .theme-b .screen .mini-tl-item__date { color: #8B7D6F; }
+  .theme-b .screen .mini-tl-item__body { color: #5D5247; }
+  .theme-b .num-badge { color: #8A6238; }
+  .theme-b .palette__swatch { border-color: #E4D8C9; }
+  .theme-b .verdict { background: #F0E7D9; border-color: #C9A227; color: #4A3E2F; }
+
+  /* ───── THEME C: Dark Refinado ───── */
+  .theme-c { background: #111827; color: #F9FAFB; }
+  .theme-c .screen .mini-hero { background: #1F2937; border: 1px solid #374151; }
+  .theme-c .screen .mini-title { color: #F9FAFB; }
+  .theme-c .screen .mini-subtitle { color: #9CA3AF; }
+  .theme-c .screen .mini-badge { background: rgba(214,179,112,0.16); color: #D6B370; border: 1px solid rgba(214,179,112,0.4); }
+  .theme-c .screen .mini-btn { background: #D6B370; color: #111827; border-color: #D6B370; }
+  .theme-c .screen .mini-btn--sec { background: #1F2937; color: #F9FAFB; border-color: #4B5563; }
+  .theme-c .screen .mini-card { background: #1F2937; border: 1px solid #374151; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
+  .theme-c .screen .mini-card-title { color: #F9FAFB; }
+  .theme-c .screen .mini-label { color: #9CA3AF; }
+  .theme-c .screen .mini-textarea { background: #111827; border-color: #4B5563; color: #F9FAFB; }
+  .theme-c .screen .mini-pill { background: #111827; color: #D1D5DB; border-color: #4B5563; }
+  .theme-c .screen .mini-status { background: #1F2937; border: 1px solid #374151; }
+  .theme-c .screen .mini-status__title { color: #F9FAFB; }
+  .theme-c .screen .mini-status__desc { color: #9CA3AF; }
+  .theme-c .screen .mini-tl-item { background: #1F2937; border: 1px solid #374151; }
+  .theme-c .screen .mini-tl-item__title { color: #F9FAFB; }
+  .theme-c .screen .mini-tl-item__date { color: #9CA3AF; }
+  .theme-c .screen .mini-tl-item__body { color: #D1D5DB; }
+  .theme-c .num-badge { color: #7BA7D9; }
+  .theme-c .palette__swatch { border-color: #374151; }
+  .theme-c .verdict { background: #111827; border-color: #7BA7D9; color: #D1D5DB; }
+
+  @media (max-width: 1080px) {
+    .proposals-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <div class="kicker">Identidade visual · Redesign</div>
+  <h1>MakeMyHistory — 3 direções visuais para validação</h1>
+  <p>
+    A identidade atual transmite sensação técnica/corporativa (dashboard). As três propostas abaixo reposicionam o
+    produto em direção a <strong>memórias, histórias e legado</strong>, aplicadas nas telas reais do MakeMyHistory.
+    Nenhuma foi implementada — aguardando sua escolha para então aplicar na aplicação.
+  </p>
+</div>
+
+<div class="current-banner">
+  <strong>Identidade atual (ponto de partida):</strong> fundo azul-escuro fechado, painéis escuros, acento ciano, botões verde-teal — aparência de painel corporativo.
+  <div class="swatch-row">
+    <div class="swatch"><span style="background:#08111f"></span>#08111F</div>
+    <div class="swatch"><span style="background:#0f172a"></span>#0F172A</div>
+    <div class="swatch"><span style="background:#7dd3fc"></span>#7DD3FC</div>
+    <div class="swatch"><span style="background:#0f766e"></span>#0F766E</div>
+    <div class="swatch"><span style="background:#e5eef8"></span>#E5EEF8</div>
+  </div>
+</div>
+
+<div class="proposals-grid">
+
+  <!-- ══════════════════ PROPOSTA A ══════════════════ -->
+  <section class="proposal theme-a">
+    <div class="proposal__head">
+      <span class="proposal__num"><span class="proposal__num-dot" style="background:#5B7C99"></span>Proposta A · Recomendada</span>
+      <h2 class="proposal__title">Livro de Memórias Moderno</h2>
+      <p class="proposal__tagline">Papel claro, leitura editorial, calor de legado</p>
+    </div>
+    <div class="proposal__body">
+
+      <div>
+        <div class="section-label">Paleta</div>
+        <div class="palette">
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#F8F6F1"></span>
+            <span class="palette__info"><span class="palette__hex">#F8F6F1</span><span class="palette__role">Fundo principal</span></span>
+          </div>
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#FFFFFF"></span>
+            <span class="palette__info"><span class="palette__hex">#FFFFFF</span><span class="palette__role">Cards</span></span>
+          </div>
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#1F2937"></span>
+            <span class="palette__info"><span class="palette__hex">#1F2937</span><span class="palette__role">Texto principal</span></span>
+          </div>
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#6B7280"></span>
+            <span class="palette__info"><span class="palette__hex">#6B7280</span><span class="palette__role">Texto secundário</span></span>
+          </div>
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#5B7C99"></span>
+            <span class="palette__info"><span class="palette__hex">#5B7C99</span><span class="palette__role">Cor primária</span></span>
+          </div>
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#466782"></span>
+            <span class="palette__info"><span class="palette__hex">#466782</span><span class="palette__role">Hover primária</span></span>
+          </div>
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#D6B370"></span>
+            <span class="palette__info"><span class="palette__hex">#D6B370</span><span class="palette__role">Destaque (badges)</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label">Aplicação nas telas reais</div>
+        <div class="screen-frame">
+          <div class="screen">
+            <div class="mini-hero">
+              <div class="mini-header">
+                <div class="mini-header__left">
+                  <span class="mini-title">Bem-vindo ao MakeMyHistory</span>
+                  <span class="mini-subtitle">Guarde memórias, reviva momentos e construa sua história.</span>
+                </div>
+                <div class="mini-header__actions">
+                  <span class="mini-badge">MVP</span>
+                  <span class="mini-btn mini-btn--sec">Perfil</span>
+                  <span class="mini-btn">Instalar app</span>
+                </div>
+              </div>
+              <div class="mini-grid">
+                <div class="mini-card">
+                  <span class="mini-card-title">Nova memória</span>
+                  <span class="mini-label">O que você quer lembrar?</span>
+                  <div class="mini-textarea">Lembro do cheiro de café da manhã na casa da minha avó...</div>
+                  <div class="mini-pills">
+                    <span class="mini-pill">Data exata</span>
+                    <span class="mini-pill">Ano</span>
+                    <span class="mini-pill">Idade</span>
+                  </div>
+                </div>
+                <div class="mini-card">
+                  <span class="mini-card-title">Sua História</span>
+                  <div class="mini-status">
+                    <span class="mini-status__title">Sua história está começando.</span>
+                    <span class="mini-status__desc">Registre memórias para criarmos sua primeira história.</span>
+                  </div>
+                  <div class="mini-status">
+                    <span class="mini-status__title">Sua história aparecerá aqui</span>
+                    <span class="mini-status__desc">✨</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-timeline-head">
+                  <span class="mini-card-title">Timeline</span>
+                  <span class="mini-label">3 memórias</span>
+                </div>
+                <div class="mini-timeline">
+                  <div class="mini-tl-item">
+                    <div class="mini-tl-item__head">
+                      <span class="mini-tl-item__title">O cheiro do café da manhã</span>
+                      <span class="mini-tl-item__date">1998 · idade 8</span>
+                    </div>
+                    <span class="mini-tl-item__body">Lembro do cheiro de café da manhã na casa da minha avó, o barulho da chaleira...</span>
+                  </div>
+                  <div class="mini-tl-item">
+                    <div class="mini-tl-item__head">
+                      <span class="mini-tl-item__title">Primeiro dia de escola</span>
+                      <span class="mini-tl-item__date">1995 · idade 5</span>
+                    </div>
+                    <span class="mini-tl-item__body">Minha mãe me levou pela mão até a porta da sala, e eu me senti pequeno...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ux-note">
+        <div class="section-label">Justificativa de UX</div>
+        <p>O fundo claro <strong>#F8F6F1</strong> imita papel moderno e quente, criando a sensação de abrir um caderno de memórias. O branco dos cards separa o conteúdo como páginas, e a leitura fica confortável. A primária <strong>#5B7C99</strong> — um azul acinzentado e suave — transmite confiança sem virar "azul de banco". O dourado <strong>#D6B370</strong> aparece só em badges/marcos, remetendo a valor e legado.</p>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros-cons__col">
+          <span class="pros-cons__head pros-cons__head--pros">Prós</span>
+          <ul class="pros-cons__list pros-cons__list--pros">
+            <li>Leitura confortável e acolhedora</li>
+            <li>Nada lembra dashboard corporativo</li>
+            <li>Contraste AA/AAA acessível (texto primário sobre claro)</li>
+            <li>Uniforme para light mode e PWA</li>
+          </ul>
+        </div>
+        <div class="pros-cons__col">
+          <span class="pros-cons__head pros-cons__head--cons">Contras</span>
+          <ul class="pros-cons__list pros-cons__list--cons">
+            <li>Quebra total com o visual escuro atual — migração mais ampla</li>
+            <li>Dourado exige moderação para não parecer "dourado corporativo"</li>
+            <li>Em telas muito claras, precisa de sombras discretas</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="verdict">
+        <strong>Veredito recomendado</strong>
+        Melhor alinhamento com memórias, legado e narrativa pessoal. É a direção que mais aproxima o produto de "folheando a história da minha vida".
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ PROPOSTA B ══════════════════ -->
+  <section class="proposal theme-b">
+    <div class="proposal__head">
+      <span class="proposal__num"><span class="proposal__num-dot" style="background:#8A6238"></span>Proposta B · Elegante e Emocional</span>
+      <h2 class="proposal__title">Elegante e Emocional</h2>
+      <p class="proposal__tagline">Creme suave, tons terrosos, valor emocional</p>
+    </div>
+    <div class="proposal__body">
+
+      <div>
+        <div class="section-label">Paleta</div>
+        <div class="palette">
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#F6F0E7"></span>
+            <span class="palette__info"><span class="palette__hex">#F6F0E7</span><span class="palette__role">Fundo creme suave</span></span>
+          </div>
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#FFFDF9"></span>
+            <span class="palette__info"><span class="palette__hex">#FFFDF9</span><span class="palette__role">Cards</span></span>
+          </div>
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#3E3A36"></span>
+            <span class="palette__info"><span class="palette__hex">#3E3A36</span><span class="palette__role">Texto principal</span></span>
+          </div>
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#8B7D6F"></span>
+            <span class="palette__info"><span class="palette__hex">#8B7D6F</span><span class="palette__role">Texto secundário</span></span>
+          </div>
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#5C7280"></span>
+            <span class="palette__info"><span class="palette__hex">#5C7280</span><span class="palette__role">Azul acinzentado · primária</span></span>
+          </div>
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#C9A227"></span>
+            <span class="palette__info"><span class="palette__hex">#C9A227</span><span class="palette__role">Dourado discreto · destaque</span></span>
+          </div>
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#A67B5B"></span>
+            <span class="palette__info"><span class="palette__hex">#A67B5B</span><span class="palette__role">Terra · apoio</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label">Aplicação nas telas reais</div>
+        <div class="screen-frame">
+          <div class="screen">
+            <div class="mini-hero">
+              <div class="mini-header">
+                <div class="mini-header__left">
+                  <span class="mini-title">Bem-vindo ao MakeMyHistory</span>
+                  <span class="mini-subtitle">Guarde memórias, reviva momentos e construa sua história.</span>
+                </div>
+                <div class="mini-header__actions">
+                  <span class="mini-badge">MVP</span>
+                  <span class="mini-btn mini-btn--sec">Perfil</span>
+                  <span class="mini-btn">Instalar app</span>
+                </div>
+              </div>
+              <div class="mini-grid">
+                <div class="mini-card">
+                  <span class="mini-card-title">Nova memória</span>
+                  <span class="mini-label">O que você quer lembrar?</span>
+                  <div class="mini-textarea">Lembro do cheiro de café da manhã na casa da minha avó...</div>
+                  <div class="mini-pills">
+                    <span class="mini-pill">Data exata</span>
+                    <span class="mini-pill">Ano</span>
+                    <span class="mini-pill">Idade</span>
+                  </div>
+                </div>
+                <div class="mini-card">
+                  <span class="mini-card-title">Sua História</span>
+                  <div class="mini-status">
+                    <span class="mini-status__title">Sua história está começando.</span>
+                    <span class="mini-status__desc">Registre memórias para criarmos sua primeira história.</span>
+                  </div>
+                  <div class="mini-status">
+                    <span class="mini-status__title">Sua história aparecerá aqui</span>
+                    <span class="mini-status__desc">✨</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-timeline-head">
+                  <span class="mini-card-title">Timeline</span>
+                  <span class="mini-label">3 memórias</span>
+                </div>
+                <div class="mini-timeline">
+                  <div class="mini-tl-item">
+                    <div class="mini-tl-item__head">
+                      <span class="mini-tl-item__title">O cheiro do café da manhã</span>
+                      <span class="mini-tl-item__date">1998 · idade 8</span>
+                    </div>
+                    <span class="mini-tl-item__body">Lembro do cheiro de café da manhã na casa da minha avó, o barulho da chaleira...</span>
+                  </div>
+                  <div class="mini-tl-item">
+                    <div class="mini-tl-item__head">
+                      <span class="mini-tl-item__title">Primeiro dia de escola</span>
+                      <span class="mini-tl-item__date">1995 · idade 5</span>
+                    </div>
+                    <span class="mini-tl-item__body">Minha mãe me levou pela mão até a porta da sala, e eu me senti pequeno...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ux-note">
+        <div class="section-label">Justificativa de UX</div>
+        <p>O fundo creme <strong>#F6F0E7</strong> e os tons terrosos criam uma atmosfera emocional e nostálgica. O azul acinzentado <strong>#5C7280</strong> (primária) é mais introspectivo que o azul puro, gerando calma. O dourado discreto <strong>#C9A227</strong> aparece pontualmente, reforçando valor e afeto. É a mais "sentimental" das três.</p>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros-cons__col">
+          <span class="pros-cons__head pros-cons__head--pros">Prós</span>
+          <ul class="pros-cons__list pros-cons__list--pros">
+            <li>Aparência mais premium/afetiva</li>
+            <li>Cores quentes reforçam nostalgia</li>
+            <li>Boa diferenciação de produtos "utilitários"</li>
+          </ul>
+        </div>
+        <div class="pros-cons__col">
+          <span class="pros-cons__head pros-cons__head--cons">Contras</span>
+          <ul class="pros-cons__list pros-cons__list--cons">
+            <li>Contraste do texto secundário exige cuidado</li>
+            <li>Dourado pode parecer "luxo" demais em alguns contextos</li>
+            <li>Tons terrosos podem datar se não aplicados com cuidado</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="verdict">
+        <strong>Veredito</strong>
+        Excelente para transmitir valor emocional. Um pouco menos "livro/narrativa" que a A e mais "memória afetiva".
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ PROPOSTA C ══════════════════ -->
+  <section class="proposal theme-c">
+    <div class="proposal__head">
+      <span class="proposal__num"><span class="proposal__num-dot" style="background:#7BA7D9"></span>Proposta C · Dark Refinado</span>
+      <h2 class="proposal__title">Dark Refinado</h2>
+      <p class="proposal__tagline">Escuro elegante, dourado para leitura noturna</p>
+    </div>
+    <div class="proposal__body">
+
+      <div>
+        <div class="section-label">Paleta</div>
+        <div class="palette">
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#111827"></span>
+            <span class="palette__info"><span class="palette__hex">#111827</span><span class="palette__role">Fundo</span></span>
+          </div>
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#1F2937"></span>
+            <span class="palette__info"><span class="palette__hex">#1F2937</span><span class="palette__role">Cards</span></span>
+          </div>
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#F9FAFB"></span>
+            <span class="palette__info"><span class="palette__hex">#F9FAFB</span><span class="palette__role">Texto principal</span></span>
+          </div>
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#9CA3AF"></span>
+            <span class="palette__info"><span class="palette__hex">#9CA3AF</span><span class="palette__role">Texto secundário</span></span>
+          </div>
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#D6B370"></span>
+            <span class="palette__info"><span class="palette__hex">#D6B370</span><span class="palette__role">Primária (dourado)</span></span>
+          </div>
+          <div class="palette__row">
+            <span class="palette__swatch" style="background:#7BA7D9"></span>
+            <span class="palette__info"><span class="palette__hex">#7BA7D9</span><span class="palette__role">Apoio (azul suave)</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label">Aplicação nas telas reais</div>
+        <div class="screen-frame">
+          <div class="screen">
+            <div class="mini-hero">
+              <div class="mini-header">
+                <div class="mini-header__left">
+                  <span class="mini-title">Bem-vindo ao MakeMyHistory</span>
+                  <span class="mini-subtitle">Guarde memórias, reviva momentos e construa sua história.</span>
+                </div>
+                <div class="mini-header__actions">
+                  <span class="mini-badge">MVP</span>
+                  <span class="mini-btn mini-btn--sec">Perfil</span>
+                  <span class="mini-btn">Instalar app</span>
+                </div>
+              </div>
+              <div class="mini-grid">
+                <div class="mini-card">
+                  <span class="mini-card-title">Nova memória</span>
+                  <span class="mini-label">O que você quer lembrar?</span>
+                  <div class="mini-textarea">Lembro do cheiro de café da manhã na casa da minha avó...</div>
+                  <div class="mini-pills">
+                    <span class="mini-pill">Data exata</span>
+                    <span class="mini-pill">Ano</span>
+                    <span class="mini-pill">Idade</span>
+                  </div>
+                </div>
+                <div class="mini-card">
+                  <span class="mini-card-title">Sua História</span>
+                  <div class="mini-status">
+                    <span class="mini-status__title">Sua história está começando.</span>
+                    <span class="mini-status__desc">Registre memórias para criarmos sua primeira história.</span>
+                  </div>
+                  <div class="mini-status">
+                    <span class="mini-status__title">Sua história aparecerá aqui</span>
+                    <span class="mini-status__desc">✨</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-timeline-head">
+                  <span class="mini-card-title">Timeline</span>
+                  <span class="mini-label">3 memórias</span>
+                </div>
+                <div class="mini-timeline">
+                  <div class="mini-tl-item">
+                    <div class="mini-tl-item__head">
+                      <span class="mini-tl-item__title">O cheiro do café da manhã</span>
+                      <span class="mini-tl-item__date">1998 · idade 8</span>
+                    </div>
+                    <span class="mini-tl-item__body">Lembro do cheiro de café da manhã na casa da minha avó, o barulho da chaleira...</span>
+                  </div>
+                  <div class="mini-tl-item">
+                    <div class="mini-tl-item__head">
+                      <span class="mini-tl-item__title">Primeiro dia de escola</span>
+                      <span class="mini-tl-item__date">1995 · idade 5</span>
+                    </div>
+                    <span class="mini-tl-item__body">Minha mãe me levou pela mão até a porta da sala, e eu me senti pequeno...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ux-note">
+        <div class="section-label">Justificativa de UX</div>
+        <p>Mantém o modo escuro, mas substitui o "azul corporativo" pelo dourado <strong>#D6B370</strong> como primária e um azul suave <strong>#7BA7D9</strong> de apoio. Cards <strong>#1F2937</strong> sobre fundo <strong>#111827</strong> criam leitura confortável à noite, sem os contrastes agressivos do dashboard financeiro. Ideal para quem prefere dark mode e leitura noturna de histórias.</p>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros-cons__col">
+          <span class="pros-cons__head pros-cons__head--pros">Prós</span>
+          <ul class="pros-cons__list pros-cons__list--pros">
+            <li>Preserva dark mode (menos migração de contraste)</li>
+            <li>Dourado acolhe e evita "dashboard frio"</li>
+            <li>Bom para leitura noturna / economia de bateria</li>
+          </ul>
+        </div>
+        <div class="pros-cons__col">
+          <span class="pros-cons__head pros-cons__head--cons">Contras</span>
+          <ul class="pros-cons__list pros-cons__list--cons">
+            <li>Ainda é escuro — não transmite "papel/página"</li>
+            <li>Menos "livro de memórias" em daytime</li>
+            <li>Exige atenção ao contraste dourado vs. fundo</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="verdict">
+        <strong>Veredito</strong>
+        Solução de dark mode refinada. Boa como complemento/alternativa, menos ideal como identidade principal se o objetivo é "papel moderno".
+      </div>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>
