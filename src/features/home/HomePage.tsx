@@ -25,6 +25,7 @@ import { StoryReaderModal } from '../stories/StoryReaderModal';
 import { EditMemoryModal } from '../memories/EditMemoryModal';
 import { ProfileModal } from '../profile/ProfileModal';
 import { useStoryGeneration } from '../stories/useStoryGeneration';
+import { FeedbackButton } from '../feedback/FeedbackButton';
 import type { DateType, MemoryUI } from '../../types/memory';
 
 declare global {
@@ -401,6 +402,7 @@ export function HomePage() {
         onConfirm={handleConfirmDelete}
         onCancel={handleCloseDelete}
       />
+      <FeedbackButton />
     </main>
   );
 }
