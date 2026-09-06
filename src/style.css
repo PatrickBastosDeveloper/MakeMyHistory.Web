@@ -1464,6 +1464,7 @@ h1 {
   cursor: pointer;
   box-shadow: 0 12px 32px rgba(88, 67, 45, 0.16);
   animation: toast-in 0.2s ease;
+  white-space: pre-line;
 }
 
 .toast--info {
@@ -1492,5 +1493,211 @@ h1 {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* ───── Feedback (floating button + modal) ───── */
+.feedback-fab {
+  position: fixed;
+  right: max(24px, env(safe-area-inset-right));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  z-index: 90;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid #5c7280;
+  background: #5c7280;
+  color: #fffdf9;
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(88, 67, 45, 0.22);
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.feedback-fab:hover {
+  transform: translateY(-1px);
+  background: #4a5f6b;
+  border-color: #4a5f6b;
+}
+
+.feedback-fab:active {
+  transform: scale(0.97);
+}
+
+.feedback-fab__icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.feedback-fab__label {
+  white-space: nowrap;
+}
+
+.feedback-modal {
+  width: 100%;
+  max-width: 520px;
+  background: #fffdf9;
+  border: 1px solid #e4d8c9;
+  border-radius: 24px;
+  box-shadow: 0 24px 80px rgba(88, 67, 45, 0.18);
+  animation: modal-slide-up 0.2s ease;
+  display: grid;
+  gap: 0;
+}
+
+.feedback-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 0;
+}
+
+.feedback-modal__title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #3e3a36;
+  font-weight: 700;
+}
+
+.feedback-modal__body {
+  padding: 20px 24px;
+  display: grid;
+  gap: 16px;
+}
+
+.feedback-modal__description {
+  margin: 0;
+  color: #5d5247;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.feedback-modal__field {
+  display: grid;
+  gap: 8px;
+}
+
+.feedback-modal__label {
+  font-size: 0.92rem;
+  color: #5d5247;
+  font-weight: 600;
+}
+
+.feedback-modal__options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.feedback-modal__option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #d9c9b8;
+  background: #fffdf9;
+  color: #5d5247;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+  user-select: none;
+}
+
+.feedback-modal__option:hover {
+  border-color: rgba(92, 114, 128, 0.5);
+  background: rgba(92, 114, 128, 0.06);
+}
+
+.feedback-modal__option input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #5c7280;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.feedback-modal__textarea {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  border-radius: 14px;
+  border: 1px solid #d9c9b8;
+  background: #fffdf9;
+  color: #3e3a36;
+  padding: 14px 16px;
+  outline: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  font-family: inherit;
+}
+
+.feedback-modal__textarea::placeholder {
+  color: #8b7d6f;
+}
+
+.feedback-modal__textarea:focus {
+  border-color: #5c7280;
+  box-shadow: 0 0 0 4px rgba(92, 114, 128, 0.16);
+}
+
+.feedback-modal__counter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 20px;
+}
+
+.feedback-modal__count {
+  font-size: 0.82rem;
+  color: #8b7d6f;
+  margin-left: auto;
+}
+
+.feedback-modal__error {
+  font-size: 0.82rem;
+  color: #9b3b2c;
+  line-height: 1.4;
+}
+
+.feedback-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 0 24px 20px;
+}
+
+@media (max-width: 640px) {
+  .feedback-fab {
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+    min-width: 48px;
+    padding: 0 16px;
+  }
+
+  .feedback-fab__label {
+    display: none;
+  }
+
+  .feedback-modal {
+    max-width: none;
+    margin: 0 16px;
+  }
+
+  .feedback-modal__options {
+    grid-template-columns: 1fr;
   }
 }
