@@ -1701,3 +1701,317 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================
+   H8 — Rebranding "Livro de Memórias Moderno"
+   Paleta oficial MakeMyHistory (fundo papel, azul da marca)
+   ============================================================ */
+
+:root {
+  color: #1F2937;
+  background: #F8F6F1;
+}
+
+body {
+  background: #F8F6F1;
+}
+
+/* ── Marca / Header ─────────────────────────────────────── */
+.brand-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #ECE7DF;
+}
+
+.brand-header__main {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.brand-logo {
+  display: block;
+  height: 190px;
+  width: auto;
+  max-width: 100%;
+}
+
+.brand-tagline {
+  margin: 0;
+  color: #6B7280;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.brand-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+/* ── Cartões / papel ────────────────────────────────────── */
+.hero-card,
+.panel-card,
+.story-card,
+.story-reader,
+.share-menu,
+.modal,
+.feedback-modal {
+  background: #FFFFFF;
+}
+
+.hero-card {
+  border-color: #ECE7DF;
+  box-shadow: 0 18px 50px rgba(31, 41, 55, 0.06);
+}
+
+.panel-card {
+  border-color: #ECE7DF;
+  border-radius: 22px;
+  box-shadow: 0 8px 24px rgba(31, 41, 55, 0.05);
+}
+
+/* ── Botões ─────────────────────────────────────────────── */
+.button--primary {
+  background: #1E63C7;
+  border-color: #1E63C7;
+  color: #FFFFFF;
+}
+
+.button--primary:hover:not(:disabled) {
+  background: #1854AA;
+  border-color: #1854AA;
+}
+
+.button--secondary {
+  background: #FFFFFF;
+  color: #1F2937;
+  border-color: #D6D3D1;
+}
+
+.button--secondary:hover:not(:disabled) {
+  background: #F8F6F1;
+  border-color: #C4C0BC;
+}
+
+.button--ghost {
+  color: #1E63C7;
+}
+
+.button--ghost:hover:not(:disabled) {
+  background: rgba(30, 99, 199, 0.08);
+}
+
+.text-button,
+.story-read-link,
+.timeline-item__more-link {
+  color: #1E63C7;
+}
+
+/* ── Inputs ─────────────────────────────────────────────── */
+.input,
+.input--textarea,
+.memory-input,
+.feedback-modal__textarea {
+  border-color: #D6D3D1;
+  background: #FFFFFF;
+  color: #1F2937;
+}
+
+.input:focus,
+.memory-input:focus,
+.feedback-modal__textarea:focus {
+  border-color: #1E63C7;
+  box-shadow: 0 0 0 4px rgba(30, 99, 199, 0.15);
+}
+
+/* ── Badges (dourado emocional) ─────────────────────────── */
+.badge--default {
+  color: #8A6D2F;
+  background: #F6EEDC;
+  border-color: #E4D2A6;
+}
+
+/* ── Seção "Sua História" (destaque editorial) ──────────── */
+.story-section {
+  background: #FFFFFF;
+  border-color: #E9E2D6;
+  box-shadow: 0 14px 40px rgba(31, 41, 55, 0.07);
+}
+
+.story-section__header {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.story-section__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1F2937;
+  letter-spacing: -0.01em;
+}
+
+.story-section__subtitle {
+  margin: 0;
+  color: #6B7280;
+  font-size: 0.95rem;
+}
+
+.story-two-cards {
+  gap: 20px;
+}
+
+.story-card {
+  border-radius: 22px;
+  border-color: #ECE7DF;
+  box-shadow: 0 12px 30px rgba(31, 41, 55, 0.06);
+  max-width: 68ch;
+}
+
+.story-card__title {
+  color: #1F2937;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.story-card__content p {
+  color: #374151;
+  font-size: 1.05rem;
+  line-height: 1.85;
+  max-width: 66ch;
+}
+
+.story-reader__body p {
+  color: #374151;
+  line-height: 1.85;
+}
+
+/* ── Timeline como jornada ──────────────────────────────── */
+.timeline-list {
+  position: relative;
+  padding-left: 34px;
+  gap: 18px;
+}
+
+.timeline-list::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background: linear-gradient(180deg, #DCE6F5 0%, #E6E2DA 100%);
+  border-radius: 2px;
+}
+
+.timeline-item {
+  position: relative;
+  border-color: #ECE7DF;
+  border-radius: 18px;
+  background: #FFFFFF;
+  box-shadow: 0 4px 16px rgba(31, 41, 55, 0.05);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -33px;
+  top: 22px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #1E63C7;
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 0 0 2px rgba(30, 99, 199, 0.22);
+}
+
+.timeline-item--important::before {
+  background: #D6B370;
+  box-shadow: 0 0 0 2px rgba(214, 179, 112, 0.3);
+}
+
+@media (hover: hover) {
+  .timeline-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(31, 41, 55, 0.1);
+  }
+}
+
+.timeline-item-header__left strong {
+  color: #1F2937;
+  font-weight: 700;
+}
+
+.timeline-item-tag {
+  color: #1E63C7;
+  font-weight: 600;
+}
+
+.timeline-item p {
+  color: #374151;
+  line-height: 1.75;
+}
+
+/* ── Feedback FAB (azul da marca) ───────────────────────── */
+.feedback-fab {
+  background: #1E63C7;
+  border-color: #1E63C7;
+  box-shadow: 0 10px 26px rgba(30, 99, 199, 0.3);
+}
+
+.feedback-fab:hover {
+  background: #1854AA;
+  border-color: #1854AA;
+}
+
+/* ── Textos secundários ─────────────────────────────────── */
+.header__title {
+  color: #1F2937;
+}
+
+.header__subtitle,
+.story-status-card__desc,
+.story-placeholder-card__desc,
+.story-meta__item,
+.timeline-count {
+  color: #6B7280;
+}
+
+/* ── Leitura confortável ────────────────────────────────── */
+.lead,
+.story-card__content,
+.story-reader__body p {
+  max-width: 68ch;
+}
+
+/* ── Mobile ─────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .brand-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .brand-logo {
+    height: 150px;
+  }
+
+  .panel-card {
+    border-radius: 18px;
+  }
+
+  .story-card__content p,
+  .story-reader__body p {
+    font-size: 1.08rem;
+    line-height: 1.85;
+  }
+}

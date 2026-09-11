@@ -4,7 +4,6 @@ import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { Container } from '../../components/Container';
-import { Header } from '../../components/Header';
 import { ShareMenu } from '../../components/ShareMenu';
 import { LoadingState } from '../../components/LoadingState';
 import { formatMemoryDate } from '../../lib/date/formatMemoryDate';
@@ -273,30 +272,29 @@ export function HomePage() {
     <main className="page-shell">
       <Container>
         <Card className="hero-card">
-          <Header
-            title="Bem-vindo ao MakeMyHistory"
-            subtitle="Guarde memórias, reviva momentos e construa sua história ao longo do tempo."
-            action={
-              <div className="section-actions">
-                <Badge variant="default">MVP</Badge>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={handleOpenProfile}
-                >
-                  {profileQuery.data?.name ?? 'Perfil'}
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  disabled={!installPromptEvent}
-                  onClick={handleInstallApp}
-                >
-                  {installPromptEvent ? 'Instalar app' : 'Instalação indisponível'}
-                </Button>
-              </div>
-            }
-          />
+          <div className="brand-header">
+          <div className="brand-header__main">
+            <img src="/logo.png" alt="MakeMyHistory" className="brand-logo" />
+          </div>
+            <div className="brand-header__actions">
+              <Badge variant="default">MVP</Badge>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleOpenProfile}
+              >
+                {profileQuery.data?.name ?? 'Perfil'}
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={!installPromptEvent}
+                onClick={handleInstallApp}
+              >
+                {installPromptEvent ? 'Instalar app' : 'Instalação indisponível'}
+              </Button>
+            </div>
+          </div>
 
           <div className="home-layout">
             <div className="home-layout__row home-layout__row--top">
