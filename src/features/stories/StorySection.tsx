@@ -1,5 +1,4 @@
 import { Button } from '../../components/Button';
-import { Header } from '../../components/Header';
 import { LoadingState } from '../../components/LoadingState';
 import type { MemoryUI } from '../../types/memory';
 
@@ -78,8 +77,11 @@ export function StorySection({
   const showPlaceholder = !hasStory && successMemories.length < MIN_MEMORIES_FOR_STORY;
 
   return (
-    <section className="panel-card">
-      <Header title="Sua História" subtitle="" />
+    <section className="panel-card story-section">
+      <div className="story-section__header">
+        <h2 className="story-section__title">✨ Sua História</h2>
+        <p className="story-section__subtitle">A narrativa da sua vida, escrita a partir das suas memórias.</p>
+      </div>
       <div className="story-two-cards">
         {/* Status card */}
         {isGenerating ? (
