@@ -192,12 +192,21 @@ Nesta branch (ambos os repositórios):
    (o arquivo anterior continha apenas helpers, sem nenhuma asserção).
 4. `tests/tsconfig.json`, `@types/node` e scripts `test` / `typecheck` — o projeto não
    tinha nenhum runner de teste configurado.
+5. `src/lib/memoryDate` — a validação de UX passa a espelhar a regra do backend: rejeita
+   datas impossíveis do calendário (antes o JS "rolava" `31/02/2020` para 02/03 e deixava
+   passar), data anterior ao nascimento, ano incompatível com o nascimento e idade acima
+   da atual. A data de nascimento do perfil é propagada de `HomePage` para
+   `CreateMemoryForm` e `EditMemoryModal`.
+6. `src/main.tsx` — o Service Worker passa a procurar atualização quando a aba volta ao
+   foco, para que um PWA aberto por muito tempo receba a versão nova.
+7. `.github/workflows/ci.yml` — pipeline que roda `npm run typecheck`, `npm test` e
+   `npm run build` a cada push em `main` e a cada pull request.
 
 ---
 
 ## Etapa 3 — Testes
 
-### Frontend — `npm test` (node:test, 19 casos, 0 falhas)
+### Frontend — `npm test` (node:test, 44 casos, 0 falhas)
 
 **Service Worker (`tests/cache/serviceWorkerCache.test.ts`, 18 casos)**
 
@@ -233,6 +242,21 @@ Navegação
 - navegação offline usa o shell em cache
 - navegação offline sem shell em cache falha
 - recarregar a página não serve história antiga do cache de assets
+
+**Validação de datas (`tests/lib/memoryDate.test.ts`, 21 casos)**
+
+- data válida, campo vazio e formato `dd/mm/aaaa`
+- datas impossíveis do calendário (`31/02/2020`, `40/01/2020`, `10/13/2020`)
+- ano fora da faixa e data futura
+- data anterior ao nascimento e ano incompatível com o nascimento
+- idade 0 aceita, idade acima da atual e acima do limite absoluto
+- `parseBirthDate` e `calculateAge` (mês e dia do aniversário)
+
+**Contrato do `httpClient` (`tests/services/httpClient.test.ts`, 4 casos)**
+
+- `cache: 'no-store'` por padrão
+- opção explícita de cache sobrescreve o padrão
+- headers `X-User-Id` e `Authorization`
 
 **Probe (`tests/probe.test.ts`, 1 caso)**
 
@@ -300,8 +324,12 @@ npm run build
   contrato de erro para payloads inválidos, teste do Service Worker (era stub) e ausência
   de runner de testes no frontend.
 
-**Estado das verificações:** `dotnet test` 123/123 · `npm test` 19/19 ·
+**Estado das verificações:** `dotnet test` 123/123 · `npm test` 44/44 ·
 `npm run typecheck` sem erros · `npm run build` concluído.
+
+Os dois repositórios têm pipeline de CI (`.github/workflows/ci.yml`) que compila e
+executa a suíte a cada push em `main` e a cada pull request, atendendo ao critério de
+os testes passarem localmente **e no pipeline**.
 
 ### Observações
 
