@@ -18,6 +18,8 @@ const MAX_TITLE_LENGTH = 120;
 
 type CreateMemoryFormProps = {
   userId: string;
+  /** Data de nascimento (aaaa-mm-dd) do perfil, usada para validar as datas como UX. */
+  birthDate?: string | null;
   isPending: boolean;
   onSave: (payload: {
     userId: string;
@@ -32,7 +34,7 @@ type CreateMemoryFormProps = {
   }) => void;
 };
 
-export function CreateMemoryForm({ userId, isPending, onSave }: CreateMemoryFormProps) {
+export function CreateMemoryForm({ userId, birthDate, isPending, onSave }: CreateMemoryFormProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [dateType, setDateType] = useState<DateType | null>(null);
@@ -41,7 +43,7 @@ export function CreateMemoryForm({ userId, isPending, onSave }: CreateMemoryForm
 
   const currentYear = new Date().getFullYear();
 
-  const dateError = getDateError(dateType, dateValues);
+  const dateError = getDateError(dateType, dateValues, birthDate);
   const hasDateError = dateType !== null && dateError !== null;
   const currentDateValue = dateType ? dateValues[dateType] : '';
   const canSubmit = Boolean(content.trim()) && !isPending && !hasDateError && (dateType === null || currentDateValue !== '');
@@ -160,7 +162,7 @@ export function CreateMemoryForm({ userId, isPending, onSave }: CreateMemoryForm
               {dateType === 'FullDate' && (
                 <div className="date-value-input">
                   <input
-                    className={['input', validateFullDate(dateValues.FullDate) ? 'input--invalid' : ''].filter(Boolean).join(' ')}
+                    className={['input', validateFullDate(dateValues.FullDate, birthDate) ? 'input--invalid' : ''].filter(Boolean).join(' ')}
                     type="text"
                     value={dateValues.FullDate}
                     onChange={(e) => {
@@ -170,31 +172,31 @@ export function CreateMemoryForm({ userId, isPending, onSave }: CreateMemoryForm
                     placeholder="dd/mm/aaaa"
                     maxLength={10}
                   />
-                  {validateFullDate(dateValues.FullDate) ? <span className="date-value-error">{validateFullDate(dateValues.FullDate)}</span> : null}
+                  {validateFullDate(dateValues.FullDate, birthDate) ? <span className="date-value-error">{validateFullDate(dateValues.FullDate, birthDate)}</span> : null}
                 </div>
               )}
               {dateType === 'YearOnly' && (
                 <div className="date-value-input">
                   <input
-                    className={['input', validateYearOnly(dateValues.YearOnly) ? 'input--invalid' : ''].filter(Boolean).join(' ')}
+                    className={['input', validateYearOnly(dateValues.YearOnly, birthDate) ? 'input--invalid' : ''].filter(Boolean).join(' ')}
                     type="text" inputMode="numeric"
                     value={dateValues.YearOnly}
                     onChange={(e) => setDateValues((prev) => ({ ...prev, YearOnly: e.target.value.replace(/[^\d]/g, '') }))}
                     placeholder="Ex: 2018" maxLength={4}
                   />
-                  {validateYearOnly(dateValues.YearOnly) ? <span className="date-value-error">{validateYearOnly(dateValues.YearOnly)}</span> : null}
+                  {validateYearOnly(dateValues.YearOnly, birthDate) ? <span className="date-value-error">{validateYearOnly(dateValues.YearOnly, birthDate)}</span> : null}
                 </div>
               )}
               {dateType === 'Age' && (
                 <div className="date-value-input">
                   <input
-                    className={['input', validateAge(dateValues.Age) ? 'input--invalid' : ''].filter(Boolean).join(' ')}
+                    className={['input', validateAge(dateValues.Age, birthDate) ? 'input--invalid' : ''].filter(Boolean).join(' ')}
                     type="text" inputMode="numeric"
                     value={dateValues.Age}
                     onChange={(e) => setDateValues((prev) => ({ ...prev, Age: e.target.value.replace(/[^\d]/g, '') }))}
                     placeholder="Ex: 25" maxLength={3}
                   />
-                  {validateAge(dateValues.Age) ? <span className="date-value-error">{validateAge(dateValues.Age)}</span> : null}
+                  {validateAge(dateValues.Age, birthDate) ? <span className="date-value-error">{validateAge(dateValues.Age, birthDate)}</span> : null}
                 </div>
               )}
             </>
