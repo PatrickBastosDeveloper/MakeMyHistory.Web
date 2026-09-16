@@ -1,6 +1,8 @@
 import type { AppError } from '../types/app';
 
-const baseUrl = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim() ?? '';
+// `import.meta.env` só existe sob o Vite; o encadeamento opcional mantém o módulo
+// importável em outros ambientes (ex.: testes automatizados rodando no Node).
+const baseUrl = (import.meta.env?.VITE_API_BASE_URL as string | undefined)?.trim() ?? '';
 
 export type RequestOptions = RequestInit & {
   authToken?: string;
@@ -22,13 +24,16 @@ export async function httpClient<T>(path: string, options: RequestOptions = {}):
     headers.set('X-User-Id', options.userId);
   }
 
-  if (import.meta.env.DEV && (path.startsWith('/api/memories') || path.startsWith('/api/stories/me'))) {
+  if (import.meta.env?.DEV && (path.startsWith('/api/memories') || path.startsWith('/api/stories/me'))) {
     // eslint-disable-next-line no-console
     console.debug(`[api] path=${path} baseUrl=${baseUrl} userId=${options.userId ?? ''}`);
   }
 
   const response = await fetch(`${baseUrl}${path}`, {
     ...options,
+    // Nunca servir respostas de API a partir do cache HTTP: a história/memórias
+    // mais recentes devem ser sempre buscadas na rede (sem hard refresh).
+    cache: options.cache ?? 'no-store',
     headers,
   });
 

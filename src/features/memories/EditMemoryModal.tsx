@@ -31,6 +31,8 @@ type EditMemoryPayload = {
 
 type EditMemoryModalProps = {
   memory: MemoryUI | null;
+  /** Data de nascimento (aaaa-mm-dd) do perfil, usada para validar as datas como UX. */
+  birthDate?: string | null;
   isOpen: boolean;
   isSaving: boolean;
   onClose: () => void;
@@ -41,7 +43,7 @@ const currentYear = new Date().getFullYear();
 
 export { type EditMemoryPayload };
 
-export function EditMemoryModal({ memory, isOpen, isSaving, onClose, onSave }: EditMemoryModalProps) {
+export function EditMemoryModal({ memory, birthDate, isOpen, isSaving, onClose, onSave }: EditMemoryModalProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [dateType, setDateType] = useState<DateType | null>(null);
@@ -78,7 +80,7 @@ export function EditMemoryModal({ memory, isOpen, isSaving, onClose, onSave }: E
   }, [content]);
 
   const currentDateValue = dateType ? dateValues[dateType] : '';
-  const dateError = getDateError(dateType, dateValues);
+  const dateError = getDateError(dateType, dateValues, birthDate);
   const hasDateError = dateType !== null && dateError !== null;
   const canSave = Boolean(content.trim()) && !isSaving && !hasDateError && (dateType === null || currentDateValue !== '');
 
@@ -148,29 +150,29 @@ export function EditMemoryModal({ memory, isOpen, isSaving, onClose, onSave }: E
                 </div>
                 {dateType === 'FullDate' && (
                   <div className="date-value-input">
-                    <input className={['input', validateFullDate(currentDateValue) ? 'input--invalid' : ''].filter(Boolean).join(' ')} type="text" value={currentDateValue}
+                    <input className={['input', validateFullDate(currentDateValue, birthDate) ? 'input--invalid' : ''].filter(Boolean).join(' ')} type="text" value={currentDateValue}
                       onChange={(e) => {
                         const formatted = autoFormatFullDate(e.target.value, currentDateValue.length);
                         setDateValues((prev) => ({ ...prev, FullDate: formatted }));
                       }}
                       placeholder="dd/mm/aaaa" maxLength={10} />
-                    {validateFullDate(currentDateValue) ? <span className="date-value-error">{validateFullDate(currentDateValue)}</span> : null}
+                    {validateFullDate(currentDateValue, birthDate) ? <span className="date-value-error">{validateFullDate(currentDateValue, birthDate)}</span> : null}
                   </div>
                 )}
                 {dateType === 'YearOnly' && (
                   <div className="date-value-input">
-                    <input className={['input', validateYearOnly(currentDateValue) ? 'input--invalid' : ''].filter(Boolean).join(' ')} type="text" inputMode="numeric" value={currentDateValue}
+                    <input className={['input', validateYearOnly(currentDateValue, birthDate) ? 'input--invalid' : ''].filter(Boolean).join(' ')} type="text" inputMode="numeric" value={currentDateValue}
                       onChange={(e) => setDateValues((prev) => ({ ...prev, YearOnly: e.target.value.replace(/[^\d]/g, '') }))}
                       placeholder="Ex: 2018" maxLength={4} />
-                    {validateYearOnly(currentDateValue) ? <span className="date-value-error">{validateYearOnly(currentDateValue)}</span> : null}
+                    {validateYearOnly(currentDateValue, birthDate) ? <span className="date-value-error">{validateYearOnly(currentDateValue, birthDate)}</span> : null}
                   </div>
                 )}
                 {dateType === 'Age' && (
                   <div className="date-value-input">
-                    <input className={['input', validateAge(currentDateValue) ? 'input--invalid' : ''].filter(Boolean).join(' ')} type="text" inputMode="numeric" value={currentDateValue}
+                    <input className={['input', validateAge(currentDateValue, birthDate) ? 'input--invalid' : ''].filter(Boolean).join(' ')} type="text" inputMode="numeric" value={currentDateValue}
                       onChange={(e) => setDateValues((prev) => ({ ...prev, Age: e.target.value.replace(/[^\d]/g, '') }))}
                       placeholder="Ex: 25" maxLength={3} />
-                    {validateAge(currentDateValue) ? <span className="date-value-error">{validateAge(currentDateValue)}</span> : null}
+                    {validateAge(currentDateValue, birthDate) ? <span className="date-value-error">{validateAge(currentDateValue, birthDate)}</span> : null}
                   </div>
                 )}
               </>

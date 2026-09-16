@@ -26,7 +26,20 @@ if (!container) {
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    void navigator.serviceWorker.register('/sw.js');
+    void navigator.serviceWorker.register('/sw.js').then((registration) => {
+      // Um PWA aberto por muito tempo pode nunca navegar de novo, e nesse caso a
+      // procura automática por atualização não acontece. Verificar ao voltar o foco
+      // faz a nova versão assumir sem depender de hard refresh.
+      const checkForUpdate = () => {
+        void registration.update().catch(() => {
+          // Falha esperada quando offline — a próxima verificação tenta de novo.
+        });
+      };
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') checkForUpdate();
+      });
+    });
   });
 }
 

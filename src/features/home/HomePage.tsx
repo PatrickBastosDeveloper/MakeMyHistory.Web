@@ -301,6 +301,7 @@ export function HomePage() {
               <CreateMemoryForm
                 key={formKey}
                 userId={userId}
+                birthDate={profileQuery.data?.birthDate ?? null}
                 isPending={createMemoryMutation.isPending}
                 onSave={handleCreateMemory}
               />
@@ -343,6 +344,7 @@ export function HomePage() {
 
       <EditMemoryModal
         memory={editingMemory}
+        birthDate={profileQuery.data?.birthDate ?? null}
         isOpen={isEditModalOpen}
         isSaving={updateMemoryMutation.isPending}
         onClose={handleCloseEdit}
