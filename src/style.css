@@ -574,6 +574,19 @@ h1 {
   cursor: pointer;
 }
 
+/* Dois checkboxes na mesma linha ("Sem data" e "Hoje"); quebram em telas estreitas. */
+.date-type-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.date-type-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #5d5247;
+}
+
 .date-type-selector {
   display: grid;
   gap: 8px;

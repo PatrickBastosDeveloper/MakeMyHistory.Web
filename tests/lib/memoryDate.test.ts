@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {
   calculateAge,
   getDateError,
+  getTodayApiDate,
+  getTodayDisplayDate,
   parseBirthDate,
   validateAge,
   validateFullDate,
@@ -150,4 +152,34 @@ test('calculateAge considera mês e dia do aniversário', () => {
   assert.equal(calculateAge(new Date(2000, 0, 1), new Date(2020, 0, 1)), 20);
   assert.equal(calculateAge(new Date(2000, 5, 10), new Date(2020, 5, 9)), 19);
   assert.equal(calculateAge(new Date(2000, 5, 10), new Date(2020, 5, 10)), 20);
+});
+
+// ── Data de hoje (campo "Hoje") ───────────────────────────────
+
+test('getTodayApiDate devolve aaaa-mm-dd com os componentes locais', () => {
+  assert.equal(getTodayApiDate(new Date(2026, 10, 20)), '2026-11-20');
+  assert.equal(getTodayApiDate(new Date(2026, 0, 5)), '2026-01-05');
+});
+
+test('getTodayApiDate não deriva de toISOString (UTC)', () => {
+  const lateNight = new Date(2026, 10, 20, 23, 0, 0);
+  const utcIso = lateNight.toISOString().slice(0, 10);
+  const offsetMinutes = lateNight.getTimezoneOffset();
+
+  // Em fuso a oeste de UTC (Brasil, UTC-3) o dia em UTC já virou.
+  if (offsetMinutes > 0) {
+    assert.notEqual(utcIso, '2026-11-20');
+  }
+
+  assert.equal(getTodayApiDate(lateNight), '2026-11-20');
+});
+
+test('getTodayDisplayDate devolve dd/mm/aaaa', () => {
+  assert.equal(getTodayDisplayDate(new Date(2026, 10, 20)), '20/11/2026');
+  assert.equal(getTodayDisplayDate(new Date(2026, 0, 5)), '05/01/2026');
+});
+
+test('a data de hoje passa na validação que o backend aplica', () => {
+  assert.equal(validateFullDate(getTodayDisplayDate(), BIRTH_1986), null);
+  assert.equal(validateFullDate(getTodayDisplayDate(), null), null);
 });

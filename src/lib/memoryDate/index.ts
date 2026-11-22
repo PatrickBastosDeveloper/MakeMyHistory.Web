@@ -163,3 +163,23 @@ export function getDateError(
     default: return null;
   }
 }
+
+/**
+ * Data de hoje no fuso do dispositivo, no formato da API (aaaa-mm-dd).
+ *
+ * NÃO use `toISOString().slice(0, 10)`: ele devolve a data em UTC e, no Brasil
+ * (UTC-3), a partir das 21:00 já devolve o dia seguinte. A memória seria
+ * gravada com a data de amanhã e o backend a rejeitaria como futura.
+ */
+export function getTodayApiDate(reference: Date = new Date()): string {
+  const year = reference.getFullYear();
+  const month = String(reference.getMonth() + 1).padStart(2, '0');
+  const day = String(reference.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+/** Data de hoje no fuso do dispositivo, no formato de exibição (dd/mm/aaaa). */
+export function getTodayDisplayDate(reference: Date = new Date()): string {
+  return formatStoredDateToInput(getTodayApiDate(reference));
+}

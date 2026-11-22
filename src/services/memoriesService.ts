@@ -4,6 +4,7 @@ import type { DateType, MemoryUI } from '../types/memory';
 export type CreateMemoryRequest = {
   title?: string;
   content: string;
+  isImportant?: boolean;
   dateType?: DateType;
   eventDate?: string;
   eventYear?: number;
