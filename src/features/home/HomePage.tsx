@@ -138,8 +138,11 @@ export function HomePage() {
         userId,
         title: memory.title,
         content: memory.content,
+        isImportant: memory.isImportant ?? false,
+        dateType: memory.dateType,
         eventDate: memory.eventDate,
         eventYear: memory.eventYear,
+        age: memory.age,
         clientRequestId: memory.clientRequestId ?? crypto.randomUUID(),
       });
     },
