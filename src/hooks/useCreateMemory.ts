@@ -17,8 +17,11 @@ function createOptimisticMemory(payload: CreateMemoryRequest) {
     status: 'pending',
     title: payload.title,
     content: payload.content,
+    isImportant: payload.isImportant ?? false,
+    dateType: payload.dateType,
     eventDate: payload.eventDate,
     eventYear: payload.eventYear,
+    age: payload.age,
     createdAt: now,
   } satisfies MemoryUI;
 }

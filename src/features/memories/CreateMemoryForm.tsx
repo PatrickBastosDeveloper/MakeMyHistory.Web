@@ -6,11 +6,13 @@ import { deriveTitle } from '../../lib/text/deriveTitle';
 import {
   EMPTY_DATE_VALUES,
   getDateError,
+  getTodayDisplayDate,
   validateFullDate,
   validateYearOnly,
   validateAge,
   autoFormatFullDate,
 } from '../../lib/memoryDate';
+import { buildDatePayload } from '../../lib/memoryDate/datePayload';
 import type { DateValues } from '../../lib/memoryDate';
 import type { DateType } from '../../types/memory';
 
@@ -40,52 +42,31 @@ export function CreateMemoryForm({ userId, birthDate, isPending, onSave }: Creat
   const [dateType, setDateType] = useState<DateType | null>(null);
   const [dateValues, setDateValues] = useState<DateValues>(EMPTY_DATE_VALUES);
   const [noDate, setNoDate] = useState(false);
+  const [today, setToday] = useState(false);
 
-  const currentYear = new Date().getFullYear();
+  const todayDisplay = getTodayDisplayDate();
 
   const dateError = getDateError(dateType, dateValues, birthDate);
   const hasDateError = dateType !== null && dateError !== null;
+  const todayError = today ? validateFullDate(todayDisplay, birthDate) : null;
   const currentDateValue = dateType ? dateValues[dateType] : '';
-  const canSubmit = Boolean(content.trim()) && !isPending && !hasDateError && (dateType === null || currentDateValue !== '');
+  const canSubmit = Boolean(content.trim())
+    && !isPending
+    && !hasDateError
+    && todayError === null
+    && (today || dateType === null || currentDateValue !== '');
 
   const handleSubmit = () => {
     if (!canSubmit) return;
-    const payload: {
-      userId: string;
-      title?: string;
-      content: string;
-      isImportant: boolean;
-      dateType?: DateType;
-      eventDate?: string;
-      eventYear?: number;
-      age?: number;
-      clientRequestId: string;
-    } = {
+
+    onSave({
       userId,
       title: title.trim() || deriveTitle(content.trim()) || undefined,
       content: content.trim(),
       isImportant: false,
       clientRequestId: crypto.randomUUID(),
-    };
-    if (!noDate && dateType === 'FullDate' && dateValues.FullDate) {
-      const parts = dateValues.FullDate.split('/');
-      if (parts.length === 3) {
-        const [day, month, yearStr] = parts;
-        const year = parseInt(yearStr, 10);
-        payload.dateType = 'FullDate';
-        payload.eventDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-        payload.eventYear = year;
-      }
-    } else if (!noDate && dateType === 'YearOnly' && dateValues.YearOnly) {
-      payload.dateType = 'YearOnly';
-      payload.eventYear = parseInt(dateValues.YearOnly, 10);
-    } else if (!noDate && dateType === 'Age' && dateValues.Age) {
-      const age = parseInt(dateValues.Age, 10);
-      payload.dateType = 'Age';
-      payload.age = age;
-      payload.eventYear = currentYear - age;
-    }
-    onSave(payload);
+      ...buildDatePayload({ today, noDate, dateType, dateValues }),
+    });
   };
 
   return (
@@ -122,23 +103,50 @@ export function CreateMemoryForm({ userId, birthDate, isPending, onSave }: Creat
         </div>
 
         <div className="date-type-selector">
-          <label className="date-type-checkbox">
-            <input
-              type="checkbox"
-              checked={noDate}
-              onChange={(e) => {
-                const checked = e.target.checked;
-                setNoDate(checked);
-                if (checked) {
-                  setDateType(null);
-                  setDateValues(EMPTY_DATE_VALUES);
-                }
-              }}
-            />
-            <span>Sem data</span>
-          </label>
+          <div className="date-type-checks">
+            <label className="date-type-checkbox" title="A memória fica sem nenhuma data">
+              <input
+                type="checkbox"
+                checked={noDate}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setNoDate(checked);
+                  if (checked) {
+                    setToday(false);
+                    setDateType(null);
+                    setDateValues(EMPTY_DATE_VALUES);
+                  }
+                }}
+              />
+              <span>Sem data</span>
+            </label>
 
-          {!noDate && (
+            <label className="date-type-checkbox" title="Grava a data de hoje para este acontecimento">
+              <input
+                type="checkbox"
+                checked={today}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setToday(checked);
+                  if (checked) {
+                    setNoDate(false);
+                    setDateType(null);
+                    setDateValues(EMPTY_DATE_VALUES);
+                  }
+                }}
+              />
+              <span>Hoje</span>
+            </label>
+          </div>
+
+          {today && (
+            <p className="date-type-hint">
+              Será salvo: <strong>{todayDisplay}</strong>
+            </p>
+          )}
+          {todayError ? <span className="date-value-error">{todayError}</span> : null}
+
+          {!noDate && !today && (
             <>
               <span className="date-type-selector__label">+ Quando isso aconteceu?</span>
               <div className="date-type-options">

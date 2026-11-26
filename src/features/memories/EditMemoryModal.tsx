@@ -7,12 +7,14 @@ import { deriveTitle } from '../../lib/text/deriveTitle';
 import {
   EMPTY_DATE_VALUES,
   getDateError,
+  getTodayDisplayDate,
   validateFullDate,
   validateYearOnly,
   validateAge,
   autoFormatFullDate,
   formatStoredDateToInput,
 } from '../../lib/memoryDate';
+import { buildDatePayload } from '../../lib/memoryDate/datePayload';
 import type { DateValues } from '../../lib/memoryDate';
 
 type EditMemoryDatePayload = {
@@ -38,8 +40,6 @@ type EditMemoryModalProps = {
   onClose: () => void;
   onSave: (payload: EditMemoryPayload) => void;
 };
-
-const currentYear = new Date().getFullYear();
 
 export { type EditMemoryPayload };
 
@@ -67,12 +67,19 @@ export function EditMemoryModal({ memory, birthDate, isOpen, isSaving, onClose, 
   }, [memory]);
 
   const [noDate, setNoDate] = useState(false);
+  const [today, setToday] = useState(false);
 
   useEffect(() => {
     if (memory) {
       setNoDate(!memory.dateType);
+      // "Hoje" é sempre uma ação do usuário, nunca um estado lido do registro:
+      // uma memória gravada ontem com "Hoje" abre como Data completa de ontem.
+      setToday(false);
     }
   }, [memory]);
+
+  const todayDisplay = getTodayDisplayDate();
+  const todayError = today ? validateFullDate(todayDisplay, birthDate) : null;
 
   const derivedTitlePlaceholder = useMemo(() => {
     if (!content.trim()) return 'Descreva um momento importante...';
@@ -82,7 +89,11 @@ export function EditMemoryModal({ memory, birthDate, isOpen, isSaving, onClose, 
   const currentDateValue = dateType ? dateValues[dateType] : '';
   const dateError = getDateError(dateType, dateValues, birthDate);
   const hasDateError = dateType !== null && dateError !== null;
-  const canSave = Boolean(content.trim()) && !isSaving && !hasDateError && (dateType === null || currentDateValue !== '');
+  const canSave = Boolean(content.trim())
+    && !isSaving
+    && !hasDateError
+    && todayError === null
+    && (today || dateType === null || currentDateValue !== '');
 
   const handleSave = useCallback(() => {
     if (!canSave || !memory) return;
@@ -90,28 +101,17 @@ export function EditMemoryModal({ memory, birthDate, isOpen, isSaving, onClose, 
       title: title.trim() || deriveTitle(content.trim()),
       content: content.trim(),
       isImportant: memory.isImportant ?? false,
+      ...buildDatePayload({ today, noDate, dateType, dateValues }),
     };
-    if (noDate) {
+
+    // clearDateInformation só vale quando nada foi escolhido: com "Hoje"
+    // marcado há uma data nova, e apagar as datas no backend venceria ela.
+    if (noDate && !today) {
       payload.clearDateInformation = true;
-    } else if (dateType && dateType === 'FullDate' && dateValues.FullDate) {
-      const parts = dateValues.FullDate.split('/');
-      if (parts.length === 3) {
-        const [day, month, yearStr] = parts;
-        payload.dateType = 'FullDate';
-        payload.eventDate = `${yearStr}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-        payload.eventYear = parseInt(yearStr, 10);
-      }
-    } else if (dateType === 'YearOnly' && dateValues.YearOnly) {
-      payload.dateType = 'YearOnly';
-      payload.eventYear = parseInt(dateValues.YearOnly, 10);
-    } else if (dateType === 'Age' && dateValues.Age) {
-      const age = parseInt(dateValues.Age, 10);
-      payload.dateType = 'Age';
-      payload.age = age;
-      payload.eventYear = currentYear - age;
     }
+
     onSave(payload);
-  }, [title, content, dateType, dateValues, memory, canSave, onSave, noDate]);
+  }, [title, content, dateType, dateValues, memory, canSave, onSave, noDate, today]);
 
   if (!isOpen || !memory) return null;
 
@@ -133,11 +133,29 @@ export function EditMemoryModal({ memory, birthDate, isOpen, isSaving, onClose, 
           </label>
           <TextArea id="edit-memory-content" label="Conteúdo" placeholder="Escreva um momento importante..." value={content} onChange={(e) => setContent(e.target.value)} rows={4} maxLength={500} />
           <div className="date-type-selector">
-            <label className="date-type-checkbox">
-              <input type="checkbox" checked={noDate} onChange={(e) => { setNoDate(e.target.checked); if (e.target.checked) { setDateType(null); setDateValues(EMPTY_DATE_VALUES); }}} />
-              <span>Sem data</span>
-            </label>
-            {!noDate && (
+            <div className="date-type-checks">
+              <label className="date-type-checkbox" title="A memória fica sem nenhuma data">
+                <input type="checkbox" checked={noDate} onChange={(e) => {
+                  const checked = e.target.checked;
+                  setNoDate(checked);
+                  if (checked) { setToday(false); setDateType(null); setDateValues(EMPTY_DATE_VALUES); }
+                }} />
+                <span>Sem data</span>
+              </label>
+              <label className="date-type-checkbox" title="Grava a data de hoje para este acontecimento">
+                <input type="checkbox" checked={today} onChange={(e) => {
+                  const checked = e.target.checked;
+                  setToday(checked);
+                  if (checked) { setNoDate(false); setDateType(null); setDateValues(EMPTY_DATE_VALUES); }
+                }} />
+                <span>Hoje</span>
+              </label>
+            </div>
+            {today && (
+              <p className="date-type-hint">Será salvo: <strong>{todayDisplay}</strong></p>
+            )}
+            {todayError ? <span className="date-value-error">{todayError}</span> : null}
+            {!noDate && !today && (
               <>
                 <span className="date-type-selector__label">Quando isso aconteceu?</span>
                 <div className="date-type-options">
